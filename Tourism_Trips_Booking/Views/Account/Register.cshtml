@@ -1,0 +1,35 @@
+﻿@model Tourism_Trips_Booking.Models.UserAccount
+
+@{
+    ViewData["Title"] = "Register";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body>
+    <div class="form-container">
+        <h2>Register New Account</h2>
+
+        <form asp-action="Register" method="post" class="register-form">
+            <label for="name">Name</label>
+            <input asp-for="Name" required placeholder="Enter your name" />
+
+            <label for="email">Email</label>
+            <input asp-for="Email" required placeholder="Enter your email" />
+
+            <label for="password">Password</label>
+            <input asp-for="Password" required placeholder="Enter your password" />
+
+           
+
+            <button type="submit" class="submit-button">Register</button>
+        </form>
+    </div>
+</body>
+</html>

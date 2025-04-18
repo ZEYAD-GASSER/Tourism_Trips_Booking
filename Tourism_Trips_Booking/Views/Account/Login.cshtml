@@ -1,0 +1,29 @@
+﻿@{
+    ViewData["Title"] = "Login";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body>
+    <div class="form-container">
+        <h2>Login</h2>
+        <form asp-action="Login" method="post" class="login-form">
+            <label for="email">Email</label>
+            <input type="email" name="email" required placeholder="Enter your email" />
+
+            <label for="password">Password</label>
+            <input type="password" name="password" required placeholder="Enter your password" />
+
+            <button type="submit" class="submit-button">Login</button>
+        </form>
+
+        <p class="error-message" style="color:red;">@ViewBag.Message</p>
+    </div>
+</body>
+</html>

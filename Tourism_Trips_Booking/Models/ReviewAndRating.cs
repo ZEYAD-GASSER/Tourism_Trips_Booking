@@ -5,7 +5,7 @@ namespace Tourism_Trips_Booking.Models
     public class ReviewAndRating
     {
        
-            public int Id { get; set; }
+            public int Id{ get; set; }
             public string? Comment { get; set; }
             public int? Rating { get; set; } 
 

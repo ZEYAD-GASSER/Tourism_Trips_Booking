@@ -1,31 +1,28 @@
-using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using Tourism_Trips_Booking.Models;
 
-namespace Tourism_Trips_Booking.Controllers;
-
-public class HomeController : Controller
+namespace Tourism_Trips_Booking.Controllers
 {
-    private readonly ILogger<HomeController> _logger;
-
-    public HomeController(ILogger<HomeController> logger)
+    public class HomeController : Controller
     {
-        _logger = logger;
-    }
+        public IActionResult Index()
+        {
+            // ??? ???? ????? ????? ?? Admin ??? User
+            
+            return View("ChooseRole");
+        }
 
-    public IActionResult Index()
-    {
-        return View();
-    }
+        public IActionResult AdminLogin()
+        {
+            return RedirectToAction("Login", "Account");
+        }
 
-    public IActionResult Privacy()
-    {
-        return View();
-    }
-
-    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public IActionResult Error()
-    {
-        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        public IActionResult UserLogin()
+        {
+            return RedirectToAction("Login", "Account");
+        }
+        public IActionResult UserChoice ()
+        {
+            return View(); // ?????? ????? ??? UserOptions
+        }
     }
 }
