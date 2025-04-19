@@ -12,7 +12,6 @@ namespace Tourism_Trips_Booking.Models
         public DbSet<UserAccount> UserAccount { get; set; }
         public DbSet<Booking> Booking { get; set; }
         public DbSet<Payment> Payment { get; set; }
-        public DbSet<Transport_Type> Transport_Type { get; set; }
         public DbSet<Trips> Trips { get; set; }
         public DbSet<ReviewAndRating> ReviewAndRating { get; set; }
 
@@ -21,7 +20,7 @@ namespace Tourism_Trips_Booking.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer("Data Source=LAPTOP-BRCLL69M\\SQLEXPRESS;Initial Catalog=Tourism_Trips_Booking;Integrated Security=True;Encrypt=False;Trust Server Certificate=True");
+                optionsBuilder.UseSqlServer("Server = .;Database = Tourism_Trips_Booking;Integrated Security= SSPI; Trust Server Certificate=True;");
             }
             base.OnConfiguring(optionsBuilder);
         }

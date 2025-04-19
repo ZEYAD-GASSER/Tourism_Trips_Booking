@@ -1,6 +1,7 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
+using System.Net;
 using Tourism_Trips_Booking.Models;
-using Tourism_Trips_Booking.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,9 +11,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<Tourism_Trips_Booking_Context>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
 );
-
-builder.Services.AddScoped<UserAccountService>();
-
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -24,8 +23,8 @@ if (!app.Environment.IsDevelopment())
 
 app.UseStaticFiles();
 app.UseRouting();
+app.UseAuthentication();
 app.UseAuthorization();
-
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}"); // ? ?? ??????? ???

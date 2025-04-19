@@ -15,15 +15,23 @@
         <h2>Login</h2>
         <form asp-action="Login" method="post" class="login-form">
             <label for="email">Email</label>
-            <input type="email" name="email" required placeholder="Enter your email" />
+            <input type="email" name="Email" required placeholder="Enter your email" />
 
             <label for="password">Password</label>
-            <input type="password" name="password" required placeholder="Enter your password" />
+            <input type="password" name="Password" required placeholder="Enter your password" />
 
             <button type="submit" class="submit-button">Login</button>
         </form>
 
-        <p class="error-message" style="color:red;">@ViewBag.Message</p>
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div class="alert alert-danger">
+                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    <p>@error.ErrorMessage</p>
+                }
+            </div>
+        }
     </div>
 </body>
 </html>

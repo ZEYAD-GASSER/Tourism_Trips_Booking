@@ -1,4 +1,4 @@
-﻿@model Tourism_Trips_Booking.Models.UserAccount
+﻿@model Tourism_Trips_Booking.ViewModels.RegisterationViewModels
 
 @{
     ViewData["Title"] = "Register";
@@ -11,22 +11,46 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewData["Title"]</title>
     <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-3.6.0.min.js"></script>
+    <script src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.19.3/jquery.validate.min.js"></script>
+    <script src="https://ajax.aspnetcdn.com/ajax/mvc/5.2.6/jquery.validate.unobtrusive.min.js"></script>
 </head>
 <body>
     <div class="form-container">
         <h2>Register New Account</h2>
 
-        <form asp-action="Register" method="post" class="register-form">
-            <label for="name">Name</label>
-            <input asp-for="Name" required placeholder="Enter your name" />
+        @if (ViewBag.Message != null)
+        {
+            <div class="alert alert-success">@ViewBag.Message</div>
+        }
 
-            <label for="email">Email</label>
-            <input asp-for="Email" required placeholder="Enter your email" />
+        <form asp-action="Registeration" method="post" class="register-form">
+            @Html.AntiForgeryToken()
 
-            <label for="password">Password</label>
-            <input asp-for="Password" required placeholder="Enter your password" />
+            <div>
+                <label asp-for="Name"></label>
+                <input asp-for="Name" class="form-input" placeholder="Enter your name" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
 
-           
+            <div>
+                <label asp-for="Email"></label>
+                <input asp-for="Email" class="form-input" placeholder="Enter your email" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+
+            <div>
+                <label asp-for="Password"></label>
+                <input asp-for="Password" class="form-input" placeholder="Enter your password" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+
+            <div>
+                <label asp-for="ConfirmPassword"></label>
+                <input asp-for="ConfirmPassword" class="form-input" placeholder="Confirm your password" />
+                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+            </div>
 
             <button type="submit" class="submit-button">Register</button>
         </form>

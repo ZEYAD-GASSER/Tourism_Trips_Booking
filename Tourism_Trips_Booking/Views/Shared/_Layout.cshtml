@@ -12,14 +12,35 @@
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
-                <!-- هنا هنعرض اسم الأبليكيشن بس، هنشيل التابات الأخرى زي Home و Privacy -->
+                <!-- Application Name (link to home page) -->
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Tourism_Trips_Booking</a>
+
+                <!-- Navigation links for logged-in users -->
+                <ul class="navbar-nav ml-auto">
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <li class="nav-item">
+                            <form method="post" asp-controller="Account" asp-action="LogOut">
+                                <button type="submit" class="btn btn-danger">Logout</button>
+                            </form>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" href="/Account/Login">Login</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/Account/Register">Register</a>
+                        </li>
+                    }
+                </ul>
             </div>
         </nav>
     </header>
     <div class="container">
         <main role="main" class="pb-3">
-            @RenderBody()  <!-- هنا هنقوم بعرض المحتوى اللي هيظهر في الصفحة -->
+            @RenderBody()  <!-- This is where the page content will be displayed -->
         </main>
     </div>
 
