@@ -29,6 +29,13 @@ namespace Tourism_Trips_Booking.Controllers
             var trip = _context.Trips.FirstOrDefault(t => t.Id == id);
             if (trip == null)
                 return NotFound();
+            var reviews = _context.ReviewAndRating
+           .Where(r => r.TripID == id)
+           .Include(r => r.UserAccount) 
+           .ToList();
+
+            ViewBag.AverageRating = reviews.Any() ? reviews.Average(r => r.Rating ?? 0) : 0;
+            ViewBag.Reviews = reviews;
 
             return View(trip);
         }

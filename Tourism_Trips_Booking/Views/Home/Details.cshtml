@@ -2,24 +2,82 @@
 
 @{
     ViewData["Title"] = "Trip Details";
+    var reviews = ViewBag.Reviews as List<Tourism_Trips_Booking.Models.ReviewAndRating>;
+    double avgRating = ViewBag.AverageRating ?? 0;
+    int fullStars = (int)Math.Floor(avgRating);
+    bool hasHalfStar = avgRating - fullStars >= 0.5;
 }
 
 <div class="container mt-5">
-    <div class="card trip-card mx-auto" style="max-width: 800px;">
-        <img src="@Model.ImagePath" class="card-img-top trip-image" alt="@Model.Title">
+    <div class="card mx-auto shadow" style="max-width: 800px;">
+        <img src="@Model.ImagePath" class="card-img-top" alt="@Model.Title" style="max-height: 400px; object-fit: cover;">
         <div class="card-body">
             <h2 class="card-title">@Model.Title</h2>
             <p class="card-text text-muted">@Model.Description</p>
-            <p><strong>Destination:</strong> @Model.Destination</p>
-            <p><strong>Hotel:</strong> @Model.HotelName</p>
-            <p><strong>Transport:</strong> @Model.TransportType</p>
-            <p><strong>Start Date:</strong> @Model.StartDate.ToShortDateString()</p>
-            <p><strong>End Date:</strong> @Model.EndDate.ToShortDateString()</p>
-            <p><strong>Price:</strong> $@Model.price</p>
+
+            <div class="row mb-2">
+                <div class="col-md-6"><strong>Destination:</strong> @Model.Destination</div>
+                <div class="col-md-6"><strong>Hotel:</strong> @Model.HotelName</div>
+                <div class="col-md-6"><strong>Transport:</strong> @Model.TransportType</div>
+                <div class="col-md-6"><strong>Price:</strong> $@Model.price</div>
+                <div class="col-md-6"><strong>Start Date:</strong> @Model.StartDate.ToShortDateString()</div>
+                <div class="col-md-6"><strong>End Date:</strong> @Model.EndDate.ToShortDateString()</div>
+            </div>
         </div>
         <div class="card-footer text-end">
             <a href="#" class="btn btn-primary">Checkout</a>
         </div>
+    </div>
+
+    <div class="mt-5">
+        <h4>Average Rating:</h4>
+        <div class="mb-2">
+            @for (int i = 1; i <= 5; i++)
+            {
+                if (i <= fullStars)
+                {
+                    <span style="color: gold; font-size: 24px;">&#9733;</span>
+                }
+                else
+                {
+                    <span style="color: lightgray; font-size: 24px;">&#9734;</span>
+                }
+            }
+            <span class="text-muted ms-2">(@avgRating.ToString("0.0") / 5)</span>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <h4>User Reviews</h4>
+        @if (reviews != null && reviews.Any())
+        {
+            @foreach (var review in reviews)
+            {
+                <div class="card my-3 shadow-sm">
+                    <div class="card-body">
+                        <h6 class="card-subtitle mb-2 text-primary">@review.UserAccount.Name</h6>
+                        <div class="mb-1">
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                if (i <= review.Rating)
+                                {
+                                    <span style="color: gold;">&#9733;</span>
+                                }
+                                else
+                                {
+                                    <span style="color: lightgray;">&#9734;</span>
+                                }
+                            }
+                        </div>
+                        <p class="card-text">@review.Comment</p>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <p class="text-muted">No reviews yet for this trip.</p>
+        }
     </div>
 </div>
 

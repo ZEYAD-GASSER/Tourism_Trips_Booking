@@ -19,7 +19,7 @@ namespace Tourism_Trips_Booking.Models
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlServer(
-                "Server=.;Database=Tourism_Trips_Booking;Integrated Security=SSPI;Trust Server Certificate=True;");
+                "Server=M_YAHIA\\M_YAHIA;Database=Tourism_Trips_Booking;Integrated Security=SSPI;Trust Server Certificate=True;");
         }
 
     }
