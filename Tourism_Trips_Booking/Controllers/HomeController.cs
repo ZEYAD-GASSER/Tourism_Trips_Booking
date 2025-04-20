@@ -51,7 +51,7 @@ namespace Tourism_Trips_Booking.Controllers
         }
         public IActionResult UserChoice ()
         {
-            return View(); // ?????? ????? ??? UserOptions
+            return View(); 
         }
     }
 }

@@ -27,7 +27,7 @@ namespace Tourism_Trips_Booking.Controllers
         public IActionResult Login() => View();
 
         [HttpPost]
-        public IActionResult Login(LoginViewModel model)
+        public async Task<IActionResult> Login(LoginViewModel model, string? returnUrl = null)
         {
             if (ModelState.IsValid)
             {
@@ -47,11 +47,24 @@ namespace Tourism_Trips_Booking.Controllers
                     };
 
                     var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-                    HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
-                    if (user.Role == "Admin")
-                        return RedirectToAction("AdminDashboard", "Account");
+                    await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
+
+
+
+                    if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+                    {
+                        return Redirect(returnUrl);
+                    }
                     else
-                        return RedirectToAction("SecurePage");
+                    {                    
+                        if (user.Role == "Admin")
+                            return RedirectToAction("AdminDashboard", "Account");
+                        else
+                            return RedirectToAction("SecurePage");
+
+                    }
+
+
                 }
                 else
                 {
