@@ -1,0 +1,35 @@
+﻿@model Tourism_Trips_Booking.Models.Trips
+
+@{
+    ViewData["Title"] = "Trip Details";
+}
+
+<div class="container mt-5">
+    <div class="card trip-card mx-auto" style="max-width: 800px;">
+        <img src="@Model.ImagePath" class="card-img-top trip-image" alt="@Model.Title">
+        <div class="card-body">
+            <h2 class="card-title">@Model.Title</h2>
+            <p class="card-text text-muted">@Model.Description</p>
+            <p><strong>Destination:</strong> @Model.Destination</p>
+            <p><strong>Hotel:</strong> @Model.HotelName</p>
+            <p><strong>Transport:</strong> @Model.TransportType</p>
+            <p><strong>Start Date:</strong> @Model.StartDate.ToShortDateString()</p>
+            <p><strong>End Date:</strong> @Model.EndDate.ToShortDateString()</p>
+            <p><strong>Price:</strong> $@Model.price</p>
+        </div>
+        <div class="card-footer text-end">
+            <a href="#" class="btn btn-primary">Checkout</a>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('.trip-card').hover(
+                function () { $(this).addClass('shadow-lg').css('transition', 'all 0.3s'); },
+                function () { $(this).removeClass('shadow-lg'); }
+            );
+        });
+    </script>
+}

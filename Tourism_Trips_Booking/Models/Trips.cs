@@ -16,6 +16,7 @@ namespace Tourism_Trips_Booking.Models
 		public required DateTime StartDate { get; set; }
         public required DateTime EndDate { get; set; }
         public required double price { get; set; }
+        public string ImagePath { get; set; }
 
 
         public List<Booking>? Bookings { get; set; } 

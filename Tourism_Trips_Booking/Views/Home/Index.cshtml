@@ -1,16 +1,49 @@
-﻿@{
-    ViewData["Title"] = "User Options";
+﻿@model List<Tourism_Trips_Booking.Models.Trips>  
+
+@{
+    ViewData["Title"] = "Home Page";
 }
 
-<div class="container mt-5">
-    <h2 class="text-center">Welcome to Tourism Trips Booking</h2>
-    <p class="text-center">If you are a user, please choose one of the options below to continue.</p>
-
-    <div class="text-center mt-4">
-        <!-- Button to navigate to Login page -->
-        <a href="@Url.Action("Login", "Account")" class="btn btn-primary mx-2">Login</a>
-
-        <!-- Button to navigate to Register page -->
-        <a href="@Url.Action("Register", "Account")" class="btn btn-outline-secondary mx-2">Register</a>
-    </div>
+<div class="text-center mb-5">
+    <h1 class="display-4 mb-3">Our Trips</h1>
+    <p class="lead">Browse our selection of premium trips. Click on any trip to view more details.</p>
 </div>
+
+
+@if (!Model.Any())
+{
+    <p>No trips available at the moment.</p>
+}
+
+<div class="row">
+    @foreach (var trip in Model)
+    {
+        <div class="col-md-6 col-lg-4 col-xl-3 mb-4">
+            <div class="card h-100 trip-card">
+                <div class="trip-image-container">
+                    <img src="@trip.ImagePath" class="card-img-top trip-image" alt="@trip.Title">
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">@trip.Title</h5>
+                    <p class="card-text text-muted">@trip.Description</p>
+                    <p class="card-text small text-muted">Trip date: @trip.StartDate</p>
+                </div>
+                <div class="card-footer d-flex justify-content-between align-items-center">
+                    <span class="font-weight-bold">Price: @trip.price</span>
+                    <a asp-controller="Home" asp-action="Details" asp-route-id="@trip.Id" class="btn btn-sm btn-outline-primary">View Details</a>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            $('.trip-card').hover(
+                function() { $(this).addClass('shadow-lg').css('transition', 'all 0.3s'); },
+                function() { $(this).removeClass('shadow-lg'); }
+            );
+        });
+    </script>
+}

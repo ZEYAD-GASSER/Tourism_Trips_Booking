@@ -37,16 +37,21 @@ namespace Tourism_Trips_Booking.Controllers
 
                 if (user != null)
                 {
+                    HttpContext.Session.SetString("UserRole", user.Role);
+                    HttpContext.Session.SetString("UserName", user.Name);
                     var claims = new List<Claim>
                     {
                         new Claim(ClaimTypes.Name, user.Email),
                         new Claim("Name", user.Name),
-                        new Claim(ClaimTypes.Role, "User"),
+                        new Claim(ClaimTypes.Role, user.Role),
                     };
 
                     var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
                     HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
-                    return RedirectToAction("SecurePage");
+                    if (user.Role == "Admin")
+                        return RedirectToAction("AdminDashboard", "Account");
+                    else
+                        return RedirectToAction("SecurePage");
                 }
                 else
                 {
@@ -108,5 +113,16 @@ namespace Tourism_Trips_Booking.Controllers
             ViewBag.Name = HttpContext.User.Identity.Name;
             return View();
         }
+        public IActionResult AdminDashboard()
+        {
+            var role = HttpContext.Session.GetString("UserRole");
+
+            if (role != "Admin")
+                return View("Index","Home"); 
+
+            return View("AdminDashboard", "Home");
+        }
+
+
     }
 }
