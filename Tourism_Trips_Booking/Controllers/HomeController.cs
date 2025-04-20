@@ -25,19 +25,43 @@ namespace Tourism_Trips_Booking.Controllers
         public IActionResult Details(int id)
         {
 
-
             var trip = _context.Trips.FirstOrDefault(t => t.Id == id);
             if (trip == null)
                 return NotFound();
+
             var reviews = _context.ReviewAndRating
            .Where(r => r.TripID == id)
            .Include(r => r.UserAccount) 
            .ToList();
-
             ViewBag.AverageRating = reviews.Any() ? reviews.Average(r => r.Rating ?? 0) : 0;
             ViewBag.Reviews = reviews;
 
+            var userId = HttpContext.Session.GetInt32("UserId");
+         //   userId = 1;
+            bool hasBooked = false;
+            if (userId != null)
+            {
+                hasBooked = _context.Booking.Any(b => b.UserID == userId && b.TripID == id);
+            }
+            ViewBag.HasBooked = hasBooked;
+
             return View(trip);
+        }
+        [HttpPost]
+        public IActionResult AddReview(ReviewAndRating review)
+        {
+            var userId = HttpContext.Session.GetInt32("UserId");
+          //  userId = 1;
+            if (userId == null) return Unauthorized();
+
+            bool hasBooked = _context.Booking.Any(b => b.UserID == userId && b.TripID == review.TripID);
+            if (!hasBooked) return Forbid();
+
+            review.UserID = userId.Value;
+            _context.ReviewAndRating.Add(review);
+            _context.SaveChanges();
+
+            return RedirectToAction("Details", new { id = review.TripID });
         }
 
         public IActionResult AdminLogin()

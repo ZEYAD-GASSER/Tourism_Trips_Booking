@@ -9,54 +9,57 @@
 }
 
 <div class="container mt-5">
-    <div class="card mx-auto shadow" style="max-width: 800px;">
-        <img src="@Model.ImagePath" class="card-img-top" alt="@Model.Title" style="max-height: 400px; object-fit: cover;">
+    <!-- Trip Card -->
+    <div class="card shadow-lg mx-auto" style="max-width: 900px;">
+        <img src="@Model.ImagePath" class="card-img-top rounded-top" style="max-height: 450px; object-fit: cover;" alt="@Model.Title">
         <div class="card-body">
-            <h2 class="card-title">@Model.Title</h2>
-            <p class="card-text text-muted">@Model.Description</p>
+            <h2 class="card-title mb-3">@Model.Title</h2>
+            <p class="text-muted">@Model.Description</p>
 
-            <div class="row mb-2">
+            <div class="row mt-4">
                 <div class="col-md-6"><strong>Destination:</strong> @Model.Destination</div>
                 <div class="col-md-6"><strong>Hotel:</strong> @Model.HotelName</div>
                 <div class="col-md-6"><strong>Transport:</strong> @Model.TransportType</div>
                 <div class="col-md-6"><strong>Price:</strong> $@Model.price</div>
-                <div class="col-md-6"><strong>Start Date:</strong> @Model.StartDate.ToShortDateString()</div>
-                <div class="col-md-6"><strong>End Date:</strong> @Model.EndDate.ToShortDateString()</div>
+                <div class="col-md-6"><strong>Start:</strong> @Model.StartDate.ToShortDateString()</div>
+                <div class="col-md-6"><strong>End:</strong> @Model.EndDate.ToShortDateString()</div>
             </div>
         </div>
-        <div class="card-footer text-end">
-            <a asp-controller="Booking" asp-action="Checkout" asp-route-tripId="@Model.Id" class="btn btn-primary">Checkout</a>
+        <div class="card-footer text-end bg-white">
+            <a asp-controller="Booking" asp-action="Checkout" asp-route-tripId="@Model.Id" class="btn btn-primary">Book Now</a>
         </div>
     </div>
 
+    <!-- Ratings -->
     <div class="mt-5">
-        <h4>Average Rating:</h4>
-        <div class="mb-2">
+        <h4 class="mb-3">Average Rating</h4>
+        <div class="d-flex align-items-center">
             @for (int i = 1; i <= 5; i++)
             {
                 if (i <= fullStars)
                 {
-                    <span style="color: gold; font-size: 24px;">&#9733;</span>
+                    <span class="me-1" style="color: gold; font-size: 24px;">&#9733;</span>
                 }
                 else
                 {
-                    <span style="color: lightgray; font-size: 24px;">&#9734;</span>
+                    <span class="me-1" style="color: lightgray; font-size: 24px;">&#9734;</span>
                 }
             }
-            <span class="text-muted ms-2">(@avgRating.ToString("0.0") / 5)</span>
+            <span class="ms-2 text-muted">(@avgRating.ToString("0.0") / 5)</span>
         </div>
     </div>
 
-    <div class="mt-4">
-        <h4>User Reviews</h4>
+    <!-- User Reviews -->
+    <div class="mt-5">
+        <h4 class="mb-3">User Reviews</h4>
         @if (reviews != null && reviews.Any())
         {
             @foreach (var review in reviews)
             {
                 <div class="card my-3 shadow-sm">
                     <div class="card-body">
-                        <h6 class="card-subtitle mb-2 text-primary">@review.UserAccount.Name</h6>
-                        <div class="mb-1">
+                        <h6 class="text-primary mb-1">@review.UserAccount.Name</h6>
+                        <div class="mb-2">
                             @for (int i = 1; i <= 5; i++)
                             {
                                 if (i <= review.Rating)
@@ -69,7 +72,7 @@
                                 }
                             }
                         </div>
-                        <p class="card-text">@review.Comment</p>
+                        <p class="mb-0">@review.Comment</p>
                     </div>
                 </div>
             }
@@ -79,15 +82,34 @@
             <p class="text-muted">No reviews yet for this trip.</p>
         }
     </div>
-</div>
 
-@section Scripts {
-    <script>
-        $(document).ready(function () {
-            $('.trip-card').hover(
-                function () { $(this).addClass('shadow-lg').css('transition', 'all 0.3s'); },
-                function () { $(this).removeClass('shadow-lg'); }
-            );
-        });
-    </script>
-}
+    <!-- Leave a Review -->
+    <div class="mt-5">
+        <h4 class="mb-3">Leave a Review</h4>
+        @if (ViewBag.HasBooked)
+        {
+            <form asp-action="AddReview" method="post" class="border p-4 rounded shadow-sm bg-light">
+                <input type="hidden" name="TripID" value="@Model.Id" />
+                <div class="mb-3">
+                    <label for="Rating" class="form-label">Rating</label>
+                    <select name="Rating" class="form-select" required>
+                        @for (int i = 5; i >0; i--)
+                        {
+                            <option value="@i">@i</option>
+                        }
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="Comment" class="form-label">Comment</label>
+                    <textarea name="Comment" class="form-control" rows="3" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-success">Submit Review</button>
+
+            </form>
+        }
+        else
+        {
+            <p class="text-muted">Only users who booked this trip can leave a review.</p>
+        }
+    </div>
+</div>
