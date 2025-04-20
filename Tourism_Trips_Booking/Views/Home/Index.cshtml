@@ -4,6 +4,13 @@
     ViewData["Title"] = "Home Page";
 }
 
+<form method="get" action="@Url.Action("Index", "Home")" class="d-flex">
+    <input type="text" name="searchTerm" class="form-control mr-2" placeholder="Search for a trip" value="@ViewData["SearchTerm"]" />
+</form>
+
+
+
+
 <div class="text-center mb-5">
     <h1 class="display-4 mb-3">Our Trips</h1>
     <p class="lead">Browse our selection of premium trips. Click on any trip to view more details.</p>

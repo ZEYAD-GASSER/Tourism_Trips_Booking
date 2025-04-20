@@ -12,12 +12,15 @@ namespace Tourism_Trips_Booking.Controllers
         {
             _context = context;
         }
-        public IActionResult Index()
+        public IActionResult Index(string searchTerm)
         {
-            var trips = _context.Trips.ToList();
-
-
-            return View(trips);
+            var trips = _context.Trips.AsQueryable();
+            if (!string.IsNullOrEmpty(searchTerm))
+            {            
+                trips = trips.Where(t => t.Title.Contains(searchTerm) || t.Description.Contains(searchTerm));
+            }
+            ViewData["SearchTerm"] = searchTerm;
+            return View(trips.ToList());
         }
         public IActionResult Details(int id)
         {
