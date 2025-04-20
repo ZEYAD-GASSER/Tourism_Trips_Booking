@@ -1,3 +1,47 @@
-﻿<h4>Adminn
+﻿@model List<Tourism_Trips_Booking.Models.Trips>
 
-</h4>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Description</th>
+            <th>Destination</th>
+            <th>Hotel Name</th>
+            <th>Transport Type</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Price</th>
+            <th>Image</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var trip in Model)
+        {
+            <tr>
+                <td>@trip.Title</td>
+                <td>@trip.Description</td>
+                <td>@trip.Destination</td>
+                <td>@trip.HotelName</td>
+                <td>@trip.TransportType</td>
+                <td>@trip.StartDate.ToShortDateString()</td>
+                <td>@trip.EndDate.ToShortDateString()</td>
+                <td>@trip.price</td>
+                <td>
+                    @if (!string.IsNullOrEmpty(trip.ImagePath))
+                    {
+                        <img src="@trip.ImagePath" alt="Trip Image" style="width:100px;height:auto;" />
+                    }
+                    else
+                    {
+                        <img src="/images/default.jpg" alt="Default Image" style="width:100px;height:auto;" />
+                    }
+                </td>
+                <td>
+                    <a href="@Url.Action("Edit", "Trip", new { id = trip.Id })" class="btn btn-warning" style="display: inline-block; margin-left: 10px;">Edit</a>
+                    <a href="@Url.Action("Delete", "Trip", new { id = trip.Id })" class="btn btn-danger" style="display: inline-block; margin-left: 10px;" onclick="return confirm('Are you sure you want to delete this trip?');">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

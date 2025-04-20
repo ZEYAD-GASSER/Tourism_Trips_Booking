@@ -141,10 +141,17 @@ namespace Tourism_Trips_Booking.Controllers
             var role = HttpContext.Session.GetString("UserRole");
 
             if (role != "Admin")
-                return View("Index","Home"); 
+                return View("Index", "Home");
 
-            return View("AdminDashboard", "Home");
+            // AdminDashboard
+            else
+            {
+                var Trips = _context.Trips.ToList();
+                return View("AdminDashboard", Trips);
+            }
         }
+
+
 
 
     }
