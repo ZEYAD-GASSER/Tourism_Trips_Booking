@@ -24,45 +24,57 @@ namespace Tourism_Trips_Booking.Controllers
         }
         public IActionResult Details(int id)
         {
-
             var trip = _context.Trips.FirstOrDefault(t => t.Id == id);
             if (trip == null)
                 return NotFound();
 
+            // Fetch reviews for the trip
             var reviews = _context.ReviewAndRating
-           .Where(r => r.TripID == id)
-           .Include(r => r.UserAccount) 
-           .ToList();
+                .Where(r => r.TripID == id)
+                .Include(r => r.UserAccount)
+                .ToList();
+
             ViewBag.AverageRating = reviews.Any() ? reviews.Average(r => r.Rating ?? 0) : 0;
             ViewBag.Reviews = reviews;
 
             var userId = HttpContext.Session.GetInt32("UserId");
-         //   userId = 1;
             bool hasBooked = false;
+
+            // Check if the logged-in user has booked the trip
             if (userId != null)
             {
                 hasBooked = _context.Booking.Any(b => b.UserID == userId && b.TripID == id);
             }
+
             ViewBag.HasBooked = hasBooked;
 
             return View(trip);
         }
+
         [HttpPost]
+
         public IActionResult AddReview(ReviewAndRating review)
         {
             var userId = HttpContext.Session.GetInt32("UserId");
-          //  userId = 1;
-            if (userId == null) return Unauthorized();
+            if (userId == null)
+                return Unauthorized();  // Ensure the user is logged in
 
+            // Check if the user has booked the trip
             bool hasBooked = _context.Booking.Any(b => b.UserID == userId && b.TripID == review.TripID);
-            if (!hasBooked) return Forbid();
+            if (!hasBooked)
+                return Forbid();  // Forbid review if the user hasn't booked the trip
 
+            // Set the UserID of the review to the logged-in user
             review.UserID = userId.Value;
+
+            // Save the review to the database
             _context.ReviewAndRating.Add(review);
             _context.SaveChanges();
 
+            // Redirect back to the trip details page
             return RedirectToAction("Details", new { id = review.TripID });
         }
+
 
         public IActionResult AdminLogin()
         {

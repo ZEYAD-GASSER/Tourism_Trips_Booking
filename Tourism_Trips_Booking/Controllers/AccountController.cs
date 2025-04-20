@@ -39,6 +39,8 @@ namespace Tourism_Trips_Booking.Controllers
                 {
                     HttpContext.Session.SetString("UserRole", user.Role);
                     HttpContext.Session.SetString("UserName", user.Name);
+                    HttpContext.Session.SetInt32("UserId", user.Id);
+
                     var claims = new List<Claim>
                     {
                         new Claim(ClaimTypes.Name, user.Email),
@@ -68,12 +70,20 @@ namespace Tourism_Trips_Booking.Controllers
                 }
                 else
                 {
-                    ModelState.AddModelError("", "يحرامي يبن ال");
+                    ModelState.AddModelError("", "Wrong email or password");
+
                 }
             }
 
             return View(model);
         }
+        [HttpGet]
+        public IActionResult Login(string? returnUrl = null)
+        {
+            ViewData["ReturnUrl"] = returnUrl;
+            return View();
+        }
+
 
         public IActionResult Register() => View();
 
