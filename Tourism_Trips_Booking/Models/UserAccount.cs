@@ -2,6 +2,7 @@
 
 namespace Tourism_Trips_Booking.Models
 {
+
     public class UserAccount
     {
         public int Id { get; set; }

@@ -1,0 +1,18 @@
+﻿@model Tourism_Trips_Booking.Models.Trips
+
+@{
+    ViewData["Title"] = "Delete Trip";
+}
+
+<h2 class="mb-4 text-danger">Are you sure you want to delete this trip?</h2>
+
+<div class="mb-4">
+    <p><strong>Title:</strong> @Model.Title</p>
+    <p><strong>Description:</strong> @Model.Description</p>
+    <p><strong>Price:</strong> @Model.price</p>
+</div>
+
+<form method="post" asp-action="DeleteConfirmed" asp-route-id="@Model.Id">
+    <button type="submit" class="btn btn-danger" style="margin-right: 10px;">Yes, Delete</button>
+    <a asp-action="AdminDashboard" asp-controller="Account" class="btn btn-secondary">Cancel</a>
+</form>
