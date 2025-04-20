@@ -18,7 +18,7 @@
             <p><strong>Price:</strong> $@Model.price</p>
         </div>
         <div class="card-footer text-end">
-            <a href="#" class="btn btn-primary">Checkout</a>
+            <a asp-controller="Booking" asp-action="Checkout" asp-route-tripId="@Model.Id" class="btn btn-primary">Checkout</a>
         </div>
     </div>
 </div>
