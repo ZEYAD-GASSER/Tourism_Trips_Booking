@@ -16,7 +16,42 @@ namespace Tourism_Trips_Booking.Controllers
             _context = context;
         }
 
-       
+        // GET: Trip/Create
+        [HttpGet]
+        public IActionResult Create()
+        {
+            return View();
+        }
+
+        // POST: Trip/Create
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(Trips trip, IFormFile ImagePath)
+        {
+            if (ModelState.IsValid)
+            {
+                if (ImagePath != null && ImagePath.Length > 0)
+                {
+                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", ImagePath.FileName);
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await ImagePath.CopyToAsync(stream);
+                    }
+                    trip.ImagePath = "/images/" + ImagePath.FileName;
+                }
+                else
+                {
+                    trip.ImagePath = "/images/default.jpg";
+                }
+
+                _context.Trips.Add(trip);
+                await _context.SaveChangesAsync();
+                return RedirectToAction("AdminDashboard", "Account");
+            }
+
+            return View(trip);
+        }
+
         [HttpGet]
         public IActionResult Edit(int id)
         {
@@ -27,15 +62,12 @@ namespace Tourism_Trips_Booking.Controllers
             return View(trip);
         }
 
-       
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, Trips trip, IFormFile ImagePath)
         {
             if (id != trip.Id)
-            {
                 return NotFound();
-            }
 
             if (ModelState.IsValid)
             {
@@ -48,37 +80,28 @@ namespace Tourism_Trips_Booking.Controllers
                         {
                             await ImagePath.CopyToAsync(stream);
                         }
-                        trip.ImagePath = "/images/" + ImagePath.FileName; 
+                        trip.ImagePath = "/images/" + ImagePath.FileName;
                     }
-
-                    
                     else if (string.IsNullOrEmpty(trip.ImagePath))
                     {
-                      
-                        trip.ImagePath = "/images/default.jpg";  
+                        trip.ImagePath = "/images/default.jpg";
                     }
 
-                   
                     _context.Trips.Update(trip);
                     await _context.SaveChangesAsync();
                 }
                 catch (Exception)
                 {
                     if (!_context.Trips.Any(t => t.Id == trip.Id))
-                    {
                         return NotFound();
-                    }
                     else
-                    {
                         throw;
-                    }
                 }
-                return RedirectToAction("AdminDashboard","Account");
+                return RedirectToAction("AdminDashboard", "Account");
             }
             return View(trip);
         }
 
-       
         [HttpGet]
         public IActionResult Delete(int id)
         {
@@ -89,7 +112,6 @@ namespace Tourism_Trips_Booking.Controllers
             return View(trip);
         }
 
-        
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(int id)
@@ -100,7 +122,7 @@ namespace Tourism_Trips_Booking.Controllers
 
             _context.Trips.Remove(trip);
             _context.SaveChanges();
-            return RedirectToAction("AdminDashboard","Account");
+            return RedirectToAction("AdminDashboard", "Account");
         }
     }
 }
