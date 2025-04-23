@@ -7,6 +7,7 @@ using System.Security.Claims;
 using Tourism_Trips_Booking.Models;
 using Tourism_Trips_Booking.ViewModels;
 using System.Linq;
+using Microsoft.AspNetCore.Identity;
 
 namespace Tourism_Trips_Booking.Controllers
 {
@@ -31,52 +32,44 @@ namespace Tourism_Trips_Booking.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = _context.UserAccount
-                    .Where(u => u.Email == model.Email && u.Password == model.Password)
-                    .FirstOrDefault();
+                var user = _context.UserAccount.FirstOrDefault(u => u.Email == model.Email);
 
                 if (user != null)
                 {
-                    HttpContext.Session.SetString("UserRole", user.Role);
-                    HttpContext.Session.SetString("UserName", user.Name);
-                    HttpContext.Session.SetInt32("UserId", user.Id);
+                    var hasher = new PasswordHasher<UserAccount>();
+                    var result = hasher.VerifyHashedPassword(null, user.Password, model.Password);
 
-                    var claims = new List<Claim>
+                    if (result == PasswordVerificationResult.Success)
                     {
-                        new Claim(ClaimTypes.Name, user.Email),
-                        new Claim("Name", user.Name),
-                        new Claim(ClaimTypes.Role, user.Role),
-                    };
+                        HttpContext.Session.SetString("UserRole", user.Role);
+                        HttpContext.Session.SetString("UserName", user.Name);
+                        HttpContext.Session.SetInt32("UserId", user.Id);
 
-                    var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-                    await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
+                        var claims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, user.Email),
+                    new Claim("Name", user.Name),
+                    new Claim(ClaimTypes.Role, user.Role),
+                };
 
+                        var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
 
-
-                    if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
-                    {
-                        return Redirect(returnUrl);
-                    }
-                    else
-                    {                    
-                        if (user.Role == "Admin")
+                        if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+                            return Redirect(returnUrl);
+                        else if (user.Role == "Admin")
                             return RedirectToAction("AdminDashboard", "Account");
                         else
-                            return RedirectToAction("SecurePage");
-
+                            return RedirectToAction("Index", "Home");
                     }
-
-
                 }
-                else
-                {
-                    ModelState.AddModelError("", "Wrong email or password");
 
-                }
+                ModelState.AddModelError("", "Wrong email or password");
             }
 
             return View(model);
         }
+
         [HttpGet]
         public IActionResult Login(string? returnUrl = null)
         {
@@ -103,7 +96,7 @@ namespace Tourism_Trips_Booking.Controllers
                 {
                     Name = model.Name,
                     Email = model.Email,
-                    Password = model.Password,
+                    Password = new PasswordHasher<UserAccount>().HashPassword(null, model.Password),
                     Role = "User"
                 };
 
@@ -126,6 +119,8 @@ namespace Tourism_Trips_Booking.Controllers
 
         public IActionResult LogOut()
         {
+            HttpContext.Session.SetInt32("UserId", 0);
+
             HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return RedirectToAction("Index","Home");
         }

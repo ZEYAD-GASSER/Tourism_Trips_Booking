@@ -6,7 +6,7 @@ namespace Tourism_Trips_Booking.Models
     public class Payment
     {
         [Key]
-        [ForeignKey("Booking")]//because it one to one relationship  the id of Payment is ForeignKey from booking
+        [ForeignKey("Booking")]
         public required int BookingID { get; set; }
         public required Booking Booking { get; set; }
         public double Price { get; set; }

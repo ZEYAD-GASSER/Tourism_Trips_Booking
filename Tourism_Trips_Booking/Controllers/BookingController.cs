@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Tourism_Trips_Booking.Models;
 using Microsoft.EntityFrameworkCore;
-
+using Microsoft.AspNetCore.Identity;
 using Tourism_Trips_Booking.ViewModels;
 
 namespace Tourism_Trips_Booking.Controllers
@@ -71,7 +71,7 @@ namespace Tourism_Trips_Booking.Controllers
             TempData["PaymentMethod"] = paymentMethod;
             TempData["TripTitle"] = trip.Title;
             TempData["PaymentMethod"] = paymentMethod;
-            TempData["OrderId"] = booking.Id; // 👈 اضف دي
+            TempData["OrderId"] = booking.Id; 
             return RedirectToAction("Success");
 
         }

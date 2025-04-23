@@ -9,9 +9,7 @@ namespace Tourism_Trips_Booking.Models
         public required string Name { get; set; }
         public required string Email { get; set; }
         public required string Password { get; set; }
-        public required string Role { get; set; } //Admin or User
-
-        //Navigation Property
+        public required string Role { get; set; } 
         public List<Booking>? Bookings { get; set; }
 
     }
