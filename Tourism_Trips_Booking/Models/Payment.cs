@@ -9,8 +9,8 @@ namespace Tourism_Trips_Booking.Models
         [ForeignKey("Booking")]//because it one to one relationship  the id of Payment is ForeignKey from booking
         public required int BookingID { get; set; }
         public required Booking Booking { get; set; }
-        public decimal Price { get; set; }
-        public bool? Manually_or_upon_receipt { get; set; }
-        public bool? PayPal { get; set; }
+        public double Price { get; set; }
+        public required string CashOrCard { get; set; }
+
     }
 }

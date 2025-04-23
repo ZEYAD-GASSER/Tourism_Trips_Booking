@@ -1,0 +1,14 @@
+﻿@{
+    ViewData["Title"] = "Payment Successful";
+    var tripTitle = TempData["TripTitle"] as string;
+    var paymentMethod = TempData["PaymentMethod"] as string;
+    var orderId = TempData["OrderId"];
+}
+
+<div class="container mt-5 text-center">
+    <h2 class="text-success">✅ Booking Confirmed!</h2>
+    <p>Your booking for <strong>@tripTitle</strong> has been completed.</p>
+    <p>Payment Method: <strong>@paymentMethod</strong></p>
+    <p>Order ID: <strong>#@orderId</strong></p>
+    <a href="/" class="btn btn-primary mt-3">Back to Home</a>
+</div>
