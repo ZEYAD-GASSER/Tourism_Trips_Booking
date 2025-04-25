@@ -1,0 +1,61 @@
+﻿@model Tourism_Trips_Booking.ViewModels.ManageViewModel
+
+<h2>Manage Bookings and Users</h2>
+
+<h3>Users</h3>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model.Users)
+        {
+            <tr>
+                <td>@user.Name</td>
+                <td>@user.Email</td>
+                <td>@user.Role</td>
+                <td>
+                    <!-- إضافة زر حذف للمستخدم -->
+                    <form asp-action="DeleteUser" method="post" onsubmit="return confirm('Are you sure you want to delete this user?');">
+                        <input type="hidden" name="id" value="@user.Id" />
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<h3>Bookings</h3>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Trip Title</th>
+            <th>User Name</th>
+            <th>Booking Date</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var booking in Model.Bookings)
+        {
+            <tr>
+                <td>@booking.Trips.Title</td>
+                <td>@booking.UserAccount.Name</td>
+                <td>@booking.BookingDate.ToShortDateString()</td>
+                <td>
+                    <!-- إضافة زر حذف للحجز -->
+                    <form asp-action="DeleteBooking" method="post" onsubmit="return confirm('Are you sure you want to delete this booking?');">
+                        <input type="hidden" name="id" value="@booking.Id" />
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

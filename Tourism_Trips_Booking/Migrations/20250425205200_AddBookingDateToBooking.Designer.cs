@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Tourism_Trips_Booking.Models;
 
@@ -11,9 +12,11 @@ using Tourism_Trips_Booking.Models;
 namespace Tourism_Trips_Booking.Migrations
 {
     [DbContext(typeof(Tourism_Trips_Booking_Context))]
-    partial class Tourism_Trips_Booking_ContextModelSnapshot : ModelSnapshot
+    [Migration("20250425205200_AddBookingDateToBooking")]
+    partial class AddBookingDateToBooking
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
