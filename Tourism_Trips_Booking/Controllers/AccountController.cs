@@ -60,7 +60,7 @@ namespace Tourism_Trips_Booking.Controllers
                         else if (user.Role == "Admin")
                             return RedirectToAction("AdminDashboard", "Account");
                         else
-                            return RedirectToAction("Index", "Home");
+                            return RedirectToAction("UserDashboard", "Account");
                     }
                 }
 
@@ -145,9 +145,42 @@ namespace Tourism_Trips_Booking.Controllers
                 return View("AdminDashboard", Trips);
             }
         }
+        public IActionResult UserDashboard()
+        {
+            int? userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null)
+                return RedirectToAction("Login", "Account");
 
+            var now = DateTime.Now;
 
+            var bookedTripIds = _context.Booking
+                .Where(b => b.UserID == userId)
+                .Select(b => b.TripID)
+                .ToList();
 
+            var allTrips = _context.Trips.ToList();
+
+            var bookedTrips = allTrips
+                .Where(t => bookedTripIds.Contains(t.Id) && t.StartDate > now)
+                .ToList();
+
+            var recommendedTrips = _context.Trips
+                .Where(t => !bookedTripIds.Contains(t.Id) && t.StartDate > now)
+                .OrderByDescending(t => _context.Booking.Count(b => b.TripID == t.Id))
+                .Take(5) 
+                .ToList();
+
+         
+            var previousTrips = allTrips
+                .Where(t => bookedTripIds.Contains(t.Id) && t.EndDate < now)
+                .ToList();
+
+            ViewBag.BookedTrips = bookedTrips;
+            ViewBag.RecommendedTrips = recommendedTrips;
+            ViewBag.PreviousTrips = previousTrips;
+
+            return View();
+        }
 
     }
 }

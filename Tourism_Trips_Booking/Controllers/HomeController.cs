@@ -28,7 +28,6 @@ namespace Tourism_Trips_Booking.Controllers
             if (trip == null)
                 return NotFound();
 
-            // Fetch reviews for the trip
             var reviews = _context.ReviewAndRating
                 .Where(r => r.TripID == id)
                 .Include(r => r.UserAccount)
@@ -40,7 +39,6 @@ namespace Tourism_Trips_Booking.Controllers
             var userId = HttpContext.Session.GetInt32("UserId");
             bool hasBooked = false;
 
-            // Check if the logged-in user has booked the trip
             if (userId != null)
             {
                 hasBooked = _context.Booking.Any(b => b.UserID == userId && b.TripID == id);
@@ -57,21 +55,18 @@ namespace Tourism_Trips_Booking.Controllers
         {
             var userId = HttpContext.Session.GetInt32("UserId");
             if (userId == null)
-                return Unauthorized();  // Ensure the user is logged in
+                return Unauthorized(); 
 
-            // Check if the user has booked the trip
+  
             bool hasBooked = _context.Booking.Any(b => b.UserID == userId && b.TripID == review.TripID);
             if (!hasBooked)
-                return Forbid();  // Forbid review if the user hasn't booked the trip
+                return Forbid();  
 
-            // Set the UserID of the review to the logged-in user
             review.UserID = userId.Value;
 
-            // Save the review to the database
             _context.ReviewAndRating.Add(review);
             _context.SaveChanges();
 
-            // Redirect back to the trip details page
             return RedirectToAction("Details", new { id = review.TripID });
         }
 

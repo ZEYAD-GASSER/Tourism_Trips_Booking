@@ -1,0 +1,90 @@
+﻿@{
+    ViewData["Title"] = "User Dashboard";
+    var bookedTrips = ViewBag.BookedTrips as List<Tourism_Trips_Booking.Models.Trips>;
+    var notBookedTrips = ViewBag.NotBookedTrips as List<Tourism_Trips_Booking.Models.Trips>;
+}
+
+<div class="container mt-4">
+
+    <h3 class="mb-3">Upcoming Booked Trips</h3>
+    @if (bookedTrips != null && bookedTrips.Any())
+    {
+        <div class="row">
+            @foreach (var trip in bookedTrips)
+            {
+                <div class="col-md-4 mb-3">
+                    <div class="card shadow-sm">
+                        <img src="@trip.ImagePath" class="card-img-top" style="height: 200px; object-fit: cover;" />
+                        <div class="card-body">
+                            <h5 class="card-title">@trip.Title</h5>
+                            <p class="card-text text-muted">@trip.Destination</p>
+                            <p class="card-text">Start: @trip.StartDate.ToShortDateString()</p>
+                            <a asp-controller="Home" asp-action="Details" asp-route-id="@trip.Id" class="btn btn-sm btn-outline-primary">View Details</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <p class="text-muted">You haven't booked any future trips yet.</p>
+    }
+
+    <hr class="my-5" />
+
+    <h3 class="mt-4">Recommended Trips</h3>
+@if (ViewBag.RecommendedTrips != null && ViewBag.RecommendedTrips.Count > 0)
+{
+    <div class="row">
+        @foreach (var trip in ViewBag.RecommendedTrips)
+        {
+            <div class="col-md-4 mb-3">
+                <div class="card h-100">
+                    <img src="@trip.ImagePath" class="card-img-top" style="height: 200px; object-fit: cover;" />
+                    <div class="card-body">
+                        <h5 class="card-title">@trip.Title</h5>
+                        <p class="card-text">Start: @trip.StartDate.ToShortDateString()</p>
+                        <p class="card-text">End: @trip.EndDate.ToShortDateString()</p>
+                        <p class="card-text">Price: @trip.price</p>
+                        <a asp-controller="Home" asp-action="Details" asp-route-id="@trip.Id" class="btn btn-sm btn-outline-primary">View Details</a>
+                        
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <p>No recommended trips at the moment.</p>
+}
+
+    <hr class="my-5" />
+    <h3 class="mb-3">Previous Trips</h3>
+    @if (ViewBag.PreviousTrips != null && ((List<Tourism_Trips_Booking.Models.Trips>)ViewBag.PreviousTrips).Any())
+    {
+        var previousTrips = (List<Tourism_Trips_Booking.Models.Trips>)ViewBag.PreviousTrips;
+        <div class="row">
+            @foreach (var trip in previousTrips)
+            {
+                <div class="col-md-4 mb-3">
+                    <div class="card shadow-sm">
+                        <img src="@trip.ImagePath" class="card-img-top" style="height: 200px; object-fit: cover;" />
+                        <div class="card-body">
+                            <h5 class="card-title">@trip.Title</h5>
+                            <p class="card-text text-muted">@trip.Destination</p>
+                            <p class="card-text">Ended: @trip.EndDate.ToShortDateString()</p>
+                            <a asp-controller="Home" asp-action="Details" asp-route-id="@trip.Id" class="btn btn-sm btn-outline-secondary">View Details</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <p class="text-muted">You haven't completed any trips yet.</p>
+    }
+
+</div>
