@@ -8,9 +8,23 @@
     <div class="card shadow-lg mx-auto" style="max-width: 800px;">
         <div class="card-body">
             <h2 class="card-title">Choose Payment Method for "@Model.Title"</h2>
-            <p class="text-muted">Price: $@Model.price</p>
+            <p class="text-muted">Price per person: $@Model.price</p>
             <form asp-action="ConfirmPayment" method="post">
                 <input type="hidden" name="tripId" value="@Model.Id" />
+
+                <!-- Number of people input -->
+                <div class="form-group">
+                    <label for="numberOfPeople">Number of People:</label>
+                    <input type="number" id="numberOfPeople" name="NumberOfPeople" class="form-control" min="1" value="1" required />
+                </div>
+
+                <!-- Display Total Price -->
+                <div class="form-group">
+                    <label>Total Price:</label>
+                    <p id="totalPrice">$@Model.price</p> <!-- This will show the total price -->
+                </div>
+
+                <!-- Payment Method Radio Buttons -->
                 <div class="form-check my-3">
                     <input class="form-check-input" type="radio" name="paymentMethod" id="cash" value="Cash" checked>
                     <label class="form-check-label" for="cash">Cash</label>
@@ -19,8 +33,20 @@
                     <input class="form-check-input" type="radio" name="paymentMethod" id="card" value="Card">
                     <label class="form-check-label" for="card">Card</label>
                 </div>
+
                 <button type="submit" class="btn btn-success">Confirm Booking</button>
             </form>
         </div>
     </div>
 </div>
+
+<script>
+    // JavaScript to dynamically calculate the total price when number of people changes
+    document.getElementById("numberOfPeople").addEventListener("input", function() {
+        var numberOfPeople = parseInt(this.value) || 1;
+        var pricePerPerson = @Model.price; // Pass the trip price from the model
+        var totalPrice = pricePerPerson * numberOfPeople;
+
+        document.getElementById("totalPrice").innerText = "$" + totalPrice.toFixed(2); // Show the total price
+    });
+</script>

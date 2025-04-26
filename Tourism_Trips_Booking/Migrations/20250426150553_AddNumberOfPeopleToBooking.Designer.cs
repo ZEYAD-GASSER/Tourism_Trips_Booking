@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Tourism_Trips_Booking.Models;
 
@@ -11,9 +12,11 @@ using Tourism_Trips_Booking.Models;
 namespace Tourism_Trips_Booking.Migrations
 {
     [DbContext(typeof(Tourism_Trips_Booking_Context))]
-    partial class Tourism_Trips_Booking_ContextModelSnapshot : ModelSnapshot
+    [Migration("20250426150553_AddNumberOfPeopleToBooking")]
+    partial class AddNumberOfPeopleToBooking
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -122,9 +125,6 @@ namespace Tourism_Trips_Booking.Migrations
 
                     b.Property<string>("ImagePath")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("MaxCapacity")
-                        .HasColumnType("int");
 
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");

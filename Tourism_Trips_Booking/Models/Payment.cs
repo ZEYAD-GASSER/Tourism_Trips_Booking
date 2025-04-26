@@ -6,11 +6,15 @@ namespace Tourism_Trips_Booking.Models
     public class Payment
     {
         [Key]
-        [ForeignKey("Booking")]
-        public required int BookingID { get; set; }
-        public required Booking Booking { get; set; }
-        public double Price { get; set; }
-        public required string CashOrCard { get; set; }
+        [ForeignKey(nameof(Booking))]
+        public int BookingID { get; set; }
 
+        public Booking Booking { get; set; }
+
+        [Required]
+        public double Price { get; set; }
+
+        [Required]
+        public string CashOrCard { get; set; }
     }
 }

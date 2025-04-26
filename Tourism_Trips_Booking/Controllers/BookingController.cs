@@ -29,9 +29,8 @@ namespace Tourism_Trips_Booking.Controllers
             return View("SelectPayment", trip);
         }
 
-
         [HttpPost]
-        public async Task<IActionResult> ConfirmPayment(int tripId, string paymentMethod)
+        public async Task<IActionResult> ConfirmPayment(int tripId, int numberOfPeople, string paymentMethod)
         {
             if (!User.Identity.IsAuthenticated)
                 return RedirectToAction("Login", "Account");
@@ -44,6 +43,9 @@ namespace Tourism_Trips_Booking.Controllers
 
             var user = await _context.UserAccount.FirstOrDefaultAsync(u => u.Email == userEmail);
             if (user == null) return Unauthorized();
+
+            // Calculate the total price based on the number of people
+            var totalPrice = trip.price * numberOfPeople;
 
             var booking = new Booking
             {
@@ -60,27 +62,29 @@ namespace Tourism_Trips_Booking.Controllers
             {
                 BookingID = booking.Id,
                 Booking = booking,
-                Price = trip.price,
+                Price = totalPrice,  // Use the total price here
                 CashOrCard = paymentMethod
             };
 
             _context.Payment.Add(payment);
             await _context.SaveChangesAsync();
 
+            // Save total price in TempData (convert to string for TempData serialization)
             TempData["TripTitle"] = trip.Title;
             TempData["PaymentMethod"] = paymentMethod;
-            TempData["TripTitle"] = trip.Title;
-            TempData["PaymentMethod"] = paymentMethod;
-            TempData["OrderId"] = booking.Id; 
+            TempData["OrderId"] = booking.Id;
+            TempData["TotalPrice"] = totalPrice.ToString("F2");  // Convert to string for TempData
+
             return RedirectToAction("Success");
-
         }
-
 
         public IActionResult Success()
         {
+            // Convert TotalPrice back to double
+            var totalPrice = TempData["TotalPrice"] != null ? Convert.ToDouble(TempData["TotalPrice"]) : 0.0;
+
+            ViewBag.TotalPrice = totalPrice;
             return View();
         }
-
     }
 }
