@@ -3,6 +3,7 @@ using Tourism_Trips_Booking.Models;
 using System.Linq;
 using Tourism_Trips_Booking.ViewModels;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace Tourism_Trips_Booking.Controllers
 {
@@ -17,7 +18,20 @@ namespace Tourism_Trips_Booking.Controllers
 
         public IActionResult Manage()
         {
-            var users = _context.UserAccount.ToList();
+            var currentUserIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            // Fallback: if user not logged in or claim is missing, return all users
+            if (string.IsNullOrEmpty(currentUserIdStr))
+            {
+                currentUserIdStr = "-1"; // dummy value that doesn't match any user
+            }
+
+            int currentUserId = int.Parse(currentUserIdStr);
+
+            var users = _context.UserAccount
+                                .Where(u => u.Id != currentUserId)
+                                .ToList();
+
             var bookings = _context.Booking
                           .Include(b => b.Trips)
                           .Include(b => b.UserAccount)
@@ -29,11 +43,11 @@ namespace Tourism_Trips_Booking.Controllers
                 Bookings = bookings
             };
 
-            // عرض الرسالة الخاصة بحذف المستخدم أو الحجز
             ViewBag.SuccessMessage = TempData["SuccessMessage"];
 
             return View(model);
         }
+
 
         [HttpPost]
         public IActionResult DeleteUser(int id)
@@ -42,15 +56,24 @@ namespace Tourism_Trips_Booking.Controllers
 
             if (user == null)
             {
-                return NotFound();
+                TempData["SuccessMessage"] = "User not found.";
+                return RedirectToAction("Manage");
+            }
+
+            // ❌ Check if the user is an admin
+            if (user.Role != null && user.Role.ToLower() == "admin")
+            {
+                TempData["SuccessMessage"] = "You cannot delete an admin account.";
+                return RedirectToAction("Manage");
             }
 
             _context.UserAccount.Remove(user);
             _context.SaveChanges();
 
-            TempData["SuccessMessage"] = "User deleted successfully";  // رسالة النجاح
+            TempData["SuccessMessage"] = "User deleted successfully.";
             return RedirectToAction("Manage");
         }
+
 
         [HttpPost]
         public IActionResult DeleteBooking(int id)
@@ -62,10 +85,14 @@ namespace Tourism_Trips_Booking.Controllers
                 return NotFound();
             }
 
+            var payments = _context.Payment.Where(p => p.BookingID == id).ToList();
+            _context.Payment.RemoveRange(payments);
+
+            // Then delete the booking
             _context.Booking.Remove(booking);
             _context.SaveChanges();
 
-            TempData["SuccessMessage"] = "Booking deleted successfully";  // رسالة النجاح
+            TempData["SuccessMessage"] = "Booking deleted successfully";
             return RedirectToAction("Manage");
         }
     }
