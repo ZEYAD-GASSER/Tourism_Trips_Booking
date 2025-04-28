@@ -32,7 +32,9 @@ namespace Tourism_Trips_Booking.Models
         [Required]
         public double price { get; set; }
 
+        [Required]
         public string? ImagePath { get; set; }
+
 
         public List<Booking>? Bookings { get; set; }
         public List<ReviewAndRating>? Reviews { get; set; }

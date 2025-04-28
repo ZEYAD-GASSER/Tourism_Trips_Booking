@@ -52,27 +52,61 @@ namespace Tourism_Trips_Booking.Controllers
         [HttpPost]
         public IActionResult DeleteUser(int id)
         {
-            var user = _context.UserAccount.FirstOrDefault(u => u.Id == id);
-
-            if (user == null)
+            try
             {
-                TempData["SuccessMessage"] = "User not found.";
+                var user = _context.UserAccount.FirstOrDefault(u => u.Id == id);
+
+                if (user == null)
+                {
+                    TempData["SuccessMessage"] = "User not found.";
+                    return RedirectToAction("Manage");
+                }
+
+                // Prevent deleting admin accounts
+                if (user.Role != null && user.Role.ToLower() == "admin")
+                {
+                    TempData["SuccessMessage"] = "You cannot delete an admin account.";
+                    return RedirectToAction("Manage");
+                }
+
+                // Find all bookings related to this user
+                var bookings = _context.Booking.Where(b => b.UserID == id).ToList();
+
+                if (bookings.Any())
+                {
+                    // Get all booking IDs
+                    var bookingIds = bookings.Select(b => b.Id).ToList();
+
+                    // ✅ First delete all payments related to these bookings
+                    var payments = _context.Payment.Where(p => bookingIds.Contains(p.BookingID)).ToList();
+                    if (payments.Any())
+                    {
+                        _context.Payment.RemoveRange(payments);
+                    }
+
+                    // ✅ Then delete the bookings
+                    _context.Booking.RemoveRange(bookings);
+                }
+
+                // ✅ Now delete the user
+                _context.UserAccount.Remove(user);
+
+                _context.SaveChanges();
+
+                TempData["SuccessMessage"] = "User, bookings, and related payments deleted successfully.";
                 return RedirectToAction("Manage");
             }
-
-            // ❌ Check if the user is an admin
-            if (user.Role != null && user.Role.ToLower() == "admin")
+            catch (Exception ex)
             {
-                TempData["SuccessMessage"] = "You cannot delete an admin account.";
+                TempData["SuccessMessage"] = "Error deleting user: " + (ex.InnerException?.Message ?? ex.Message);
                 return RedirectToAction("Manage");
             }
-
-            _context.UserAccount.Remove(user);
-            _context.SaveChanges();
-
-            TempData["SuccessMessage"] = "User deleted successfully.";
-            return RedirectToAction("Manage");
         }
+
+
+
+
+
 
 
         [HttpPost]
