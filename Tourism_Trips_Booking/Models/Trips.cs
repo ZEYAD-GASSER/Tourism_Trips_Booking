@@ -38,11 +38,8 @@ namespace Tourism_Trips_Booking.Models
         [Range(0, double.MaxValue)]
         public double price { get; set; }
 
-<<<<<<< HEAD
         [MaxLength(300)]
-=======
         [Required]
->>>>>>> fba219964bd19e78ca1292b271c9a4ffa0d0f627
         public string? ImagePath { get; set; }
 
 

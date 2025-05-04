@@ -77,62 +77,37 @@ namespace Tourism_Trips_Booking.Controllers
                     // Get all booking IDs
                     var bookingIds = bookings.Select(b => b.Id).ToList();
 
-                    // ✅ First delete all payments related to these bookings
+                    // First delete all payments related to these bookings
                     var payments = _context.Payment.Where(p => bookingIds.Contains(p.BookingID)).ToList();
                     if (payments.Any())
                     {
                         _context.Payment.RemoveRange(payments);
                     }
 
-                    // ✅ Then delete the bookings
+                    // Then delete the bookings
                     _context.Booking.RemoveRange(bookings);
                 }
 
-                // ✅ Now delete the user
-                _context.UserAccount.Remove(user);
+                // Delete reviews related to this user
+                var reviews = _context.ReviewAndRating.Where(r => r.UserID == id).ToList();
+                if (reviews.Any())
+                {
+                    _context.ReviewAndRating.RemoveRange(reviews);
+                }
 
+                // Now delete the user
+                _context.UserAccount.Remove(user);
                 _context.SaveChanges();
 
-                TempData["SuccessMessage"] = "User, bookings, and related payments deleted successfully.";
+                TempData["SuccessMessage"] = "User, bookings, payments, and reviews deleted successfully.";
                 return RedirectToAction("Manage");
             }
-<<<<<<< HEAD
-
-            if (user.Role != null && user.Role.ToLower() == "admin")
-=======
             catch (Exception ex)
->>>>>>> fba219964bd19e78ca1292b271c9a4ffa0d0f627
             {
                 TempData["SuccessMessage"] = "Error deleting user: " + (ex.InnerException?.Message ?? ex.Message);
                 return RedirectToAction("Manage");
             }
         }
-
-
-
-
-<<<<<<< HEAD
-            var userBookings = _context.Booking.Where(b => b.UserID == id).ToList();
-
-            foreach (var booking in userBookings)
-            {
-                var payments = _context.Payment.Where(p => p.BookingID == booking.Id).ToList();
-                _context.Payment.RemoveRange(payments);
-            }
-
-            _context.Booking.RemoveRange(userBookings);
-
-            var reviews = _context.ReviewAndRating.Where(r => r.UserID == id).ToList();
-            _context.ReviewAndRating.RemoveRange(reviews);
-
-            _context.UserAccount.Remove(user);
-            _context.SaveChanges();
-=======
->>>>>>> fba219964bd19e78ca1292b271c9a4ffa0d0f627
-
-
-
-
 
         [HttpPost]
         public IActionResult DeleteBooking(int id)
