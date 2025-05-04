@@ -60,12 +60,24 @@ namespace Tourism_Trips_Booking.Controllers
                 return RedirectToAction("Manage");
             }
 
-            // ❌ Check if the user is an admin
             if (user.Role != null && user.Role.ToLower() == "admin")
             {
                 TempData["SuccessMessage"] = "You cannot delete an admin account.";
                 return RedirectToAction("Manage");
             }
+
+            var userBookings = _context.Booking.Where(b => b.UserID == id).ToList();
+
+            foreach (var booking in userBookings)
+            {
+                var payments = _context.Payment.Where(p => p.BookingID == booking.Id).ToList();
+                _context.Payment.RemoveRange(payments);
+            }
+
+            _context.Booking.RemoveRange(userBookings);
+
+            var reviews = _context.ReviewAndRating.Where(r => r.UserID == id).ToList();
+            _context.ReviewAndRating.RemoveRange(reviews);
 
             _context.UserAccount.Remove(user);
             _context.SaveChanges();
@@ -73,6 +85,8 @@ namespace Tourism_Trips_Booking.Controllers
             TempData["SuccessMessage"] = "User deleted successfully.";
             return RedirectToAction("Manage");
         }
+
+
 
 
         [HttpPost]

@@ -4,6 +4,7 @@ using Tourism_Trips_Booking.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Tourism_Trips_Booking.ViewModels;
+using System.Security.Claims;
 
 namespace Tourism_Trips_Booking.Controllers
 {
@@ -86,5 +87,39 @@ namespace Tourism_Trips_Booking.Controllers
             ViewBag.TotalPrice = totalPrice;
             return View();
         }
+        [HttpPost]
+        public async Task<IActionResult> CancelReservation(int tripId)
+        {
+            if (!User.Identity.IsAuthenticated)
+                return RedirectToAction("Login", "Account");
+
+            var userEmail = User.Identity?.Name;
+            if (userEmail == null)
+                return Unauthorized();
+
+            var user = await _context.UserAccount.FirstOrDefaultAsync(u => u.Email == userEmail);
+            if (user == null)
+                return Unauthorized();
+
+            // Find the booking for this user and trip
+            var booking = await _context.Booking
+                .FirstOrDefaultAsync(b => b.TripID == tripId && b.UserID == user.Id);
+
+            if (booking == null)
+                return NotFound("Booking not found.");
+
+            // Remove associated payment first (if exists)
+            var payment = await _context.Payment.FirstOrDefaultAsync(p => p.BookingID == booking.Id);
+            if (payment != null)
+                _context.Payment.Remove(payment);
+
+            _context.Booking.Remove(booking);
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = "Reservation cancelled successfully.";
+            return RedirectToAction("UserDashboard", "Account");
+        }
+
+
     }
 }

@@ -27,4 +27,5 @@ namespace Tourism_Trips_Booking.Models
 
         public List<Booking>? Bookings { get; set; }
     }
+
 }

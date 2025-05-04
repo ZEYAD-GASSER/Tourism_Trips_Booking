@@ -5,23 +5,22 @@ namespace Tourism_Trips_Booking.Models
 {
     public class Booking
     {
+        [Key]
         public int Id { get; set; }
 
-        [ForeignKey("Trips")]
+        [Required]
+        [ForeignKey(nameof(Trips))]
         public int TripID { get; set; }
-        public required Trips Trips { get; set; }
-
-        [ForeignKey("UserAccount")]
-        public int UserID { get; set; }
-        public required UserAccount UserAccount { get; set; }
-
-        public DateTime BookingDate { get; set; }
 
         [Required]
-        public int NumberOfPeople { get; set; } // Added this property for the number of people
-        public double GetTotalPrice()
-        {
-            return Trips.price * NumberOfPeople; // Multiply trip price by the number of people
-        }
+        public Trips Trips { get; set; }
+
+        [Required]
+        [ForeignKey(nameof(UserAccount))]
+        public int UserID { get; set; }
+
+        [Required]
+        public UserAccount UserAccount { get; set; }
     }
+
 }

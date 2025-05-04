@@ -6,6 +6,12 @@
 
 <div class="container mt-4">
 
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["SuccessMessage"]
+        </div>
+    }
     <h3 class="mb-3">Upcoming Booked Trips</h3>
     @if (bookedTrips != null && bookedTrips.Any())
     {
@@ -20,6 +26,12 @@
                             <p class="card-text text-muted">@trip.Destination</p>
                             <p class="card-text">Start: @trip.StartDate.ToShortDateString()</p>
                             <a asp-controller="Home" asp-action="Details" asp-route-id="@trip.Id" class="btn btn-sm btn-outline-primary">View Details</a>
+
+                            <form asp-controller="Booking" asp-action="CancelReservation" method="post" asp-route-tripId="@trip.Id" class="mt-2">
+                                <button type="submit" class="btn btn-sm btn-outline-danger">Cancel Reservation</button>
+                            </form>
+
+
                         </div>
                     </div>
                 </div>
@@ -34,33 +46,33 @@
     <hr class="my-5" />
 
     <h3 class="mt-4">Recommended Trips</h3>
-@if (ViewBag.RecommendedTrips != null && ViewBag.RecommendedTrips.Count > 0)
-{
-    <div class="row">
-        @foreach (var trip in ViewBag.RecommendedTrips)
-        {
-            <div class="col-md-4 mb-3">
-                <div class="card h-100">
-                    <img src="@trip.ImagePath" class="card-img-top" style="height: 200px; object-fit: cover;" />
-                    <div class="card-body">
-                        <h5 class="card-title">@trip.Title</h5>
-                        <p class="card-text">Start: @trip.StartDate.ToShortDateString()</p>
-                        <p class="card-text">End: @trip.EndDate.ToShortDateString()</p>
-                        <p class="card-text">Price: @trip.price</p>
-                        <a asp-controller="Home" asp-action="Details" asp-route-id="@trip.Id" class="btn btn-sm btn-outline-primary">View Details</a>
-                        
+    @if (ViewBag.RecommendedTrips != null && ViewBag.RecommendedTrips.Count > 0)
+    {
+        <div class="row">
+            @foreach (var trip in ViewBag.RecommendedTrips)
+            {
+                <div class="col-md-4 mb-3">
+                    <div class="card h-100">
+                        <img src="@trip.ImagePath" class="card-img-top" style="height: 200px; object-fit: cover;" />
+                        <div class="card-body">
+                            <h5 class="card-title">@trip.Title</h5>
+                            <p class="card-text">Start: @trip.StartDate.ToShortDateString()</p>
+                            <p class="card-text">End: @trip.EndDate.ToShortDateString()</p>
+                            <p class="card-text">Price: @trip.price</p>
+                            <a asp-controller="Home" asp-action="Details" asp-route-id="@trip.Id" class="btn btn-sm btn-outline-primary">View Details</a>
+                        </div>
                     </div>
                 </div>
-            </div>
-        }
-    </div>
-}
-else
-{
-    <p>No recommended trips at the moment.</p>
-}
+            }
+        </div>
+    }
+    else
+    {
+        <p>No recommended trips at the moment.</p>
+    }
 
     <hr class="my-5" />
+
     <h3 class="mb-3">Previous Trips</h3>
     @if (ViewBag.PreviousTrips != null && ((List<Tourism_Trips_Booking.Models.Trips>)ViewBag.PreviousTrips).Any())
     {

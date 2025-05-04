@@ -44,7 +44,6 @@
         <tr>
             <th>Trip Title</th>
             <th>User Name</th>
-            <th>Booking Date</th>
             <th>Actions</th>
         </tr>
     </thead>
@@ -54,7 +53,6 @@
             <tr>
                 <td>@booking.Trips.Title</td>
                 <td>@booking.UserAccount.Name</td>
-                <td>@booking.BookingDate.ToShortDateString()</td>
                 <td>
                     <!-- إضافة زر حذف للحجز -->
                     <form asp-action="DeleteBooking" method="post" onsubmit="return confirm('Are you sure you want to delete this booking?');">

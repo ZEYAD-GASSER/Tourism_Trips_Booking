@@ -15,13 +15,6 @@ namespace Tourism_Trips_Booking.Models
         public DbSet<Trips> Trips { get; set; }
         public DbSet<ReviewAndRating> ReviewAndRating { get; set; }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            if (!optionsBuilder.IsConfigured)
-            {
-                optionsBuilder.UseSqlServer(
-                    "Server=MURPHY;Database=Tourism_Trips_Booking;Integrated Security=SSPI;TrustServerCertificate=True;");
-            }
-        }
+
     }
 }
