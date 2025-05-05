@@ -25,6 +25,7 @@ namespace Tourism_Trips_Booking.Models
         [MaxLength(50)]
         public string Role { get; set; }
 
+        public string? ProfilePicture { get; set; }
         public List<Booking>? Bookings { get; set; }
     }
 

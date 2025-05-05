@@ -21,5 +21,8 @@ namespace Tourism_Trips_Booking.ViewModels
 		[Compare("Password", ErrorMessage = "Please confirm your password!")]
 		[DataType(DataType.Password)]
 		public required string ConfirmPassword { get; set; }
-	}
+
+        [Required(ErrorMessage = "Profile picture is required!")]
+        public required IFormFile ProfilePicture { get; set; }
+    }
 }

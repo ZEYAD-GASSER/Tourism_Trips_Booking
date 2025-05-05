@@ -9,22 +9,19 @@
     <link rel="stylesheet" href="~/Tourism_Trips_Booking.styles.css" asp-append-version="true" />
 
     <style>
-        /* Custom style for the "My Dashboard" link in a blue box */
         .dashboard-link {
-            color: white; /* White text color */
-            background-color: #007bff; /* Blue background */
-            padding: 10px 20px; /* Padding around the link */
-            border-radius: 5px; /* Rounded corners */
-            text-decoration: none; /* Remove underline */
-            font-weight: bold; /* Make text bold */
+            color: white;
+            background-color: #007bff;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
         }
 
-            /* Hover effect for the "My Dashboard" link */
             .dashboard-link:hover {
-                background-color: #0056b3; /* Darker blue on hover */
+                background-color: #0056b3;
             }
 
-        /* Optional: Add some spacing between the link and other items */
         .navbar-nav .nav-item {
             margin-right: 10px;
         }
@@ -34,20 +31,21 @@
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
-                <!-- Application Name (link to home page) -->
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">ElOmda Makadi House</a>
 
-                <!-- Navigation links for logged-in users-->
                 <ul class="navbar-nav ml-auto">
                     @if (User.Identity.IsAuthenticated)
                     {
-
                         <li class="nav-item d-flex align-items-center me-3">
                             @{
                                 var role = Context.Session.GetString("UserRole");
                                 var dashboardAction = role == "Admin" ? "AdminDashboard" : "UserDashboard";
                             }
                             <a class="btn btn-primary" asp-controller="Account" asp-action="@dashboardAction">My Dashboard</a>
+                        </li>
+
+                        <li class="nav-item d-flex align-items-center me-3">
+                            <a class="btn btn-info" asp-controller="Account" asp-action="Profile">My Profile</a>
                         </li>
 
                         <li class="nav-item d-flex align-items-center me-2">
@@ -76,7 +74,7 @@
     </header>
     <div class="container">
         <main role="main" class="pb-3">
-            @RenderBody()  <!-- This is where the page content will be displayed -->
+            @RenderBody()
         </main>
     </div>
 

@@ -24,7 +24,10 @@ namespace Tourism_Trips_Booking.Controllers
         }
         public IActionResult Details(int id)
         {
-            var trip = _context.Trips.FirstOrDefault(t => t.Id == id);
+            var trip = _context.Trips
+                .Include(t => t.Bookings)
+                .FirstOrDefault(t => t.Id == id);
+
             if (trip == null)
                 return NotFound();
 

@@ -25,7 +25,7 @@
             <div class="alert alert-success">@ViewBag.Message</div>
         }
 
-        <form asp-action="Registeration" method="post" class="register-form">
+        <form asp-action="Register" method="post" enctype="multipart/form-data" class="register-form">
             @Html.AntiForgeryToken()
 
             <div>
@@ -52,12 +52,19 @@
                 <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
             </div>
 
+            <!-- Profile Picture Upload Field -->
+            <div>
+                <label asp-for="ProfilePicture">Profile Picture</label>
+                <input type="file" asp-for="ProfilePicture" class="form-input" />
+                <span asp-validation-for="ProfilePicture" class="text-danger"></span>
+            </div>
+
             <button type="submit" class="submit-button">Register</button>
         </form>
+
         <p class="register-link">
             Already have an account? <a href="/Account/Login">Login now</a>
         </p>
-
     </div>
 </body>
 </html>

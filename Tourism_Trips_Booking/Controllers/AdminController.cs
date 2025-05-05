@@ -4,6 +4,8 @@ using System.Linq;
 using Tourism_Trips_Booking.ViewModels;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
+using System.Data;
 
 namespace Tourism_Trips_Booking.Controllers
 {
@@ -15,9 +17,18 @@ namespace Tourism_Trips_Booking.Controllers
         {
             _context = context;
         }
-
+        [Authorize]
         public IActionResult Manage()
         {
+            var role = HttpContext.Session.GetString("UserRole");
+
+            var userEmail = HttpContext.Session.GetString("Email");
+
+            if (string.IsNullOrEmpty(role) || role != "Admin")
+            {
+                TempData["ErrorMessage"] = "You do not have permission to access the admin dashboard.";
+                return RedirectToAction("Index", "Home");
+            }
             var currentUserIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             // Fallback: if user not logged in or claim is missing, return all users

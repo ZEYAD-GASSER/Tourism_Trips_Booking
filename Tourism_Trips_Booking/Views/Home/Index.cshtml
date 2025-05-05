@@ -8,14 +8,10 @@
     <input type="text" name="searchTerm" class="form-control mr-2" placeholder="Search for a trip" value="@ViewData["SearchTerm"]" />
 </form>
 
-
-
-
 <div class="text-center mb-5">
     <h1 class="display-4 mb-3">Our Trips</h1>
     <p class="lead">Browse our selection of premium trips. Click on any trip to view more details.</p>
 </div>
-
 
 @if (!Model.Any())
 {
@@ -28,7 +24,7 @@
         <div class="col-md-6 col-lg-4 col-xl-3 mb-4">
             <div class="card h-100 trip-card">
                 <div class="trip-image-container">
-                    <img src="@trip.ImagePath" class="card-img-top trip-image" alt="@trip.Title">
+                    <img src="@Url.Content(trip.ImagePath)" class="card-img-top trip-image" alt="@trip.Title" onerror="this.onerror=null; this.src='@Url.Content("~/images/default.jpg")';">
                 </div>
                 <div class="card-body">
                     <h5 class="card-title">@trip.Title</h5>

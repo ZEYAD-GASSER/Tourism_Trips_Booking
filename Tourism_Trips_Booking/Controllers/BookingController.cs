@@ -33,16 +33,14 @@ namespace Tourism_Trips_Booking.Controllers
         [HttpPost]
         public async Task<IActionResult> ConfirmPayment(int tripId, int numberOfPeople, string paymentMethod)
         {
-            if (!User.Identity.IsAuthenticated)
+            var userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null)
                 return RedirectToAction("Login", "Account");
 
             var trip = await _context.Trips.FindAsync(tripId);
             if (trip == null) return NotFound();
 
-            var userEmail = User.Identity?.Name;
-            if (userEmail == null) return Unauthorized();
-
-            var user = await _context.UserAccount.FirstOrDefaultAsync(u => u.Email == userEmail);
+            var user = await _context.UserAccount.FirstOrDefaultAsync(u => u.Id == userId);
             if (user == null) return Unauthorized();
 
             // Calculate the total price based on the number of people
