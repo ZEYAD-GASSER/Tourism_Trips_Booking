@@ -26,8 +26,9 @@
         <div class="row">
             @foreach (var trip in bookedTrips)
             {
-                var booking = userBookings?.FirstOrDefault(b => b.TripID == trip.Id);
-                var numberOfPeople = booking?.Payment != null ? (int)(booking.Payment.Price / trip.price) : 1;
+                var booking = userBookings.FirstOrDefault(b => b.TripID == trip.Id);
+                var payment = booking?.Payment;
+                var numberOfPeople = payment != null ? (int)(payment.Price / trip.price) : 1;
                 
                 <div class="col-md-4 mb-3">
                     <div class="card shadow-sm">
@@ -35,22 +36,25 @@
                         <div class="card-body">
                             <h5 class="card-title">@trip.Title</h5>
                             <p class="card-text text-muted">@trip.Destination</p>
-                            <p class="card-text">Start: @trip.StartDate.ToShortDateString()</p>
-                            <p class="card-text">End: @trip.EndDate.ToShortDateString()</p>
-                            
+                            <p class="card-text">@trip.Description</p>
+                            <div class="mb-3">
+                                <p><strong>Start Date:</strong> @trip.StartDate.ToShortDateString()</p>
+                                <p><strong>End Date:</strong> @trip.EndDate.ToShortDateString()</p>
+                                <p><strong>Order ID:</strong> @booking.Id</p>
+                                <p><strong>Amount Paid:</strong> $@payment?.Price</p>
+                            </div>
+
                             <form asp-controller="Booking" asp-action="EditPassengers" method="post" class="mb-3">
-                                <input type="hidden" name="bookingId" value="@booking?.Id" />
+                                <input type="hidden" name="bookingId" value="@booking.Id" />
                                 <div class="form-group">
                                     <label for="numberOfPeople">Number of Passengers:</label>
-                                    <input type="number" class="form-control" id="numberOfPeople" name="numberOfPeople" 
-                                           min="1" max="10" value="@numberOfPeople" />
+                                    <input type="number" name="numberOfPeople" class="form-control" value="@numberOfPeople" min="1" />
                                 </div>
                                 <button type="submit" class="btn btn-sm btn-outline-primary mt-2">Update Passengers</button>
                             </form>
 
-                            <a asp-controller="Home" asp-action="Details" asp-route-id="@trip.Id" class="btn btn-sm btn-outline-primary">View Details</a>
-
-                            <form asp-controller="Booking" asp-action="CancelReservation" method="post" asp-route-bookingId="@booking?.Id" class="mt-2">
+                            <form asp-controller="Booking" asp-action="CancelReservation" method="post" class="mt-2">
+                                <input type="hidden" name="bookingId" value="@booking.Id" />
                                 <button type="submit" class="btn btn-sm btn-outline-danger">Cancel Reservation</button>
                             </form>
                         </div>
@@ -100,8 +104,8 @@
         <div class="row">
             @foreach (var trip in previousTrips)
             {
-                var booking = userBookings?.FirstOrDefault(b => b.TripID == trip.Id);
-                var numberOfPeople = booking?.Payment != null ? (int)(booking.Payment.Price / trip.price) : 1;
+                var booking = userBookings.FirstOrDefault(b => b.TripID == trip.Id);
+                var payment = booking?.Payment;
                 
                 <div class="col-md-4 mb-3">
                     <div class="card shadow-sm">
@@ -109,8 +113,13 @@
                         <div class="card-body">
                             <h5 class="card-title">@trip.Title</h5>
                             <p class="card-text text-muted">@trip.Destination</p>
-                            <p class="card-text">Ended: @trip.EndDate.ToShortDateString()</p>
-                            <p class="card-text">Passengers: @numberOfPeople</p>
+                            <p class="card-text">@trip.Description</p>
+                            <div class="mb-3">
+                                <p><strong>Start Date:</strong> @trip.StartDate.ToShortDateString()</p>
+                                <p><strong>End Date:</strong> @trip.EndDate.ToShortDateString()</p>
+                                <p><strong>Order ID:</strong> @booking.Id</p>
+                                <p><strong>Amount Paid:</strong> $@payment?.Price</p>
+                            </div>
                             <a asp-controller="Home" asp-action="Details" asp-route-id="@trip.Id" class="btn btn-sm btn-outline-secondary">View Details</a>
                         </div>
                     </div>

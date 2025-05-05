@@ -69,6 +69,16 @@ namespace Tourism_Trips_Booking.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
+            // Validate dates
+            if (trip.StartDate < DateTime.Now.Date)
+            {
+                ModelState.AddModelError("StartDate", "Start date cannot be in the past.");
+            }
+            if (trip.EndDate < trip.StartDate)
+            {
+                ModelState.AddModelError("EndDate", "End date must be after start date.");
+            }
+
             if (ModelState.IsValid)
             {
                 trip.ImagePath = SaveImage(ImagePath);
@@ -113,6 +123,16 @@ namespace Tourism_Trips_Booking.Controllers
             {
                 TempData["ErrorMessage"] = "Invalid trip ID.";
                 return RedirectToAction("AdminDashboard", "Account");
+            }
+
+            // Validate dates
+            if (trip.StartDate < DateTime.Now.Date)
+            {
+                ModelState.AddModelError("StartDate", "Start date cannot be in the past.");
+            }
+            if (trip.EndDate < trip.StartDate)
+            {
+                ModelState.AddModelError("EndDate", "End date must be after start date.");
             }
 
             // Remove ImagePath from ModelState to prevent validation
