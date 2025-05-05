@@ -4,6 +4,8 @@
     ViewData["Title"] = "Trip Details";
     var averageRating = ViewBag.AverageRating;
     var reviews = ViewBag.Reviews as List<Tourism_Trips_Booking.Models.ReviewAndRating>;
+    var hasBooked = ViewBag.HasBooked;
+    var paidAmount = ViewBag.PaidAmount;
 }
 
 <div class="container mt-5">
@@ -19,6 +21,10 @@
                 <div class="col-md-6"><strong>Hotel:</strong> @Model.HotelName</div>
                 <div class="col-md-6"><strong>Transport:</strong> @Model.TransportType</div>
                 <div class="col-md-6"><strong>Price:</strong> $@Model.price</div>
+                @if (hasBooked)
+                {
+                    <div class="col-md-6"><strong>Amount Paid:</strong> $@paidAmount</div>
+                }
                 <div class="col-md-6"><strong>Start:</strong> @Model.StartDate.ToShortDateString()</div>
                 <div class="col-md-6"><strong>End:</strong> @Model.EndDate.ToShortDateString()</div>
             </div>

@@ -24,30 +24,39 @@ namespace Tourism_Trips_Booking.Controllers
         }
         public IActionResult Details(int id)
         {
-            var trip = _context.Trips
-                .Include(t => t.Bookings)
-                .FirstOrDefault(t => t.Id == id);
+            var trip = _context.Trips.FirstOrDefault(t => t.Id == id);
+            if (trip == null) return NotFound();
 
-            if (trip == null)
-                return NotFound();
-
+            // Get average rating
             var reviews = _context.ReviewAndRating
-                .Where(r => r.TripID == id)
                 .Include(r => r.UserAccount)
+                .Where(r => r.TripID == id)
                 .ToList();
 
-            ViewBag.AverageRating = reviews.Any() ? reviews.Average(r => r.Rating ?? 0) : 0;
+            var averageRating = reviews.Any() ? reviews.Average(r => r.Rating) : 0;
+            ViewBag.AverageRating = averageRating;
             ViewBag.Reviews = reviews;
 
+            // Check if the current user has booked this trip
             var userId = HttpContext.Session.GetInt32("UserId");
-            bool hasBooked = false;
-
             if (userId != null)
             {
-                hasBooked = _context.Booking.Any(b => b.UserID == userId && b.TripID == id);
-            }
+                var booking = _context.Booking
+                    .Include(b => b.Payment)
+                    .FirstOrDefault(b => b.TripID == id && b.UserID == userId);
 
-            ViewBag.HasBooked = hasBooked;
+                if (booking != null)
+                {
+                    ViewBag.HasBooked = true;
+                    // Get the payment information
+                    var payment = _context.Payment.FirstOrDefault(p => p.BookingID == booking.Id);
+                    ViewBag.PaidAmount = payment?.Price ?? 0;
+                }
+                else
+                {
+                    ViewBag.HasBooked = false;
+                }
+            }
 
             return View(trip);
         }
