@@ -91,14 +91,17 @@ namespace Tourism_Trips_Booking.Controllers
 
             var trip = _context.Trips.FirstOrDefault(t => t.Id == id);
             if (trip == null)
-                return NotFound();
+            {
+                TempData["ErrorMessage"] = "Trip not found.";
+                return RedirectToAction("AdminDashboard", "Account");
+            }
 
             return View(trip);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, Trips trip, IFormFile ImagePath)
+        public async Task<IActionResult> Edit(int id, Trips trip, IFormFile ImagePath, string CurrentImagePath)
         {
             if (!IsAdmin())
             {
@@ -107,34 +110,71 @@ namespace Tourism_Trips_Booking.Controllers
             }
 
             if (id != trip.Id)
-                return NotFound();
+            {
+                TempData["ErrorMessage"] = "Invalid trip ID.";
+                return RedirectToAction("AdminDashboard", "Account");
+            }
+
+            // Remove ImagePath from ModelState to prevent validation
+            ModelState.Remove("ImagePath");
 
             if (ModelState.IsValid)
             {
                 try
                 {
-                    if (ImagePath != null)
+                    var existingTrip = await _context.Trips.FindAsync(id);
+                    if (existingTrip == null)
                     {
-                        trip.ImagePath = SaveImage(ImagePath);
-                    }
-                    else if (string.IsNullOrEmpty(trip.ImagePath))
-                    {
-                        trip.ImagePath = "/images/default.jpg";
+                        TempData["ErrorMessage"] = "Trip not found.";
+                        return RedirectToAction("AdminDashboard", "Account");
                     }
 
-                    _context.Trips.Update(trip);
+                    // Update trip properties
+                    existingTrip.Title = trip.Title;
+                    existingTrip.Description = trip.Description;
+                    existingTrip.Destination = trip.Destination;
+                    existingTrip.HotelName = trip.HotelName;
+                    existingTrip.TransportType = trip.TransportType;
+                    existingTrip.StartDate = trip.StartDate;
+                    existingTrip.EndDate = trip.EndDate;
+                    existingTrip.price = trip.price;
+
+                    // Handle image upload
+                    if (ImagePath != null && ImagePath.Length > 0)
+                    {
+                        // Delete old image if it's not the default one
+                        if (!string.IsNullOrEmpty(existingTrip.ImagePath) && existingTrip.ImagePath != "/images/default.jpg")
+                        {
+                            var oldImagePath = Path.Combine(_webHostEnvironment.WebRootPath, existingTrip.ImagePath.TrimStart('/'));
+                            if (System.IO.File.Exists(oldImagePath))
+                            {
+                                System.IO.File.Delete(oldImagePath);
+                            }
+                        }
+
+                        // Save new image
+                        existingTrip.ImagePath = SaveImage(ImagePath);
+                    }
+                    else
+                    {
+                        // Keep the current image path
+                        existingTrip.ImagePath = CurrentImagePath;
+                    }
+
+                    _context.Trips.Update(existingTrip);
                     await _context.SaveChangesAsync();
                     TempData["SuccessMessage"] = "Trip updated successfully.";
+                    return RedirectToAction("AdminDashboard", "Account");
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    if (!_context.Trips.Any(t => t.Id == trip.Id))
-                        return NotFound();
-                    else
-                        throw;
+                    ModelState.AddModelError("", "An error occurred while updating the trip. Please try again.");
+                    TempData["ErrorMessage"] = "An error occurred while updating the trip.";
+                    return View(trip);
                 }
-                return RedirectToAction("AdminDashboard", "Account");
             }
+
+            // If we got this far, something failed, redisplay form
             return View(trip);
         }
 

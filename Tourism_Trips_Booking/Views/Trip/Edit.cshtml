@@ -4,72 +4,127 @@
     ViewData["Title"] = "Edit Trip";
 }
 
-<h2>Edit Trip</h2>
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">Edit Trip</h3>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Edit" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+                        <input type="hidden" asp-for="Id" />
+                        <input type="hidden" asp-for="ImagePath" />
 
-<form asp-action="Edit" method="post" enctype="multipart/form-data">
-    <input type="hidden" asp-for="Id" />
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Title" class="form-label">Trip Title</label>
+                                <input asp-for="Title" class="form-control" required />
+                                <span asp-validation-for="Title" class="text-danger"></span>
+                            </div>
 
-    <div class="form-group">
-        <label asp-for="Title"></label>
-        <input asp-for="Title" class="form-control" />
-        <span asp-validation-for="Title" class="text-danger"></span>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Destination" class="form-label">Destination</label>
+                                <input asp-for="Destination" class="form-control" required />
+                                <span asp-validation-for="Destination" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Description" class="form-label">Description</label>
+                            <textarea asp-for="Description" class="form-control" rows="4" required></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="HotelName" class="form-label">Hotel Name</label>
+                                <input asp-for="HotelName" class="form-control" required />
+                                <span asp-validation-for="HotelName" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="TransportType" class="form-label">Transport Type</label>
+                                <select asp-for="TransportType" class="form-select" required>
+                                    <option value="">Select Transport Type</option>
+                                    <option value="Flight">Flight</option>
+                                    <option value="Bus">Bus</option>
+                                    <option value="Train">Train</option>
+                                    <option value="Cruise">Cruise</option>
+                                </select>
+                                <span asp-validation-for="TransportType" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="StartDate" class="form-label">Start Date</label>
+                                <input asp-for="StartDate" class="form-control" type="date" required />
+                                <span asp-validation-for="StartDate" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="EndDate" class="form-label">End Date</label>
+                                <input asp-for="EndDate" class="form-control" type="date" required />
+                                <span asp-validation-for="EndDate" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="price" class="form-label">Price (USD)</label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input asp-for="price" class="form-control" type="number" step="0.01" min="0" required />
+                            </div>
+                            <span asp-validation-for="price" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="ImagePath" class="form-label">Trip Image</label>
+                            <input type="file" name="ImagePath" class="form-control" accept="image/*" />
+                            <input type="hidden" name="CurrentImagePath" value="@Model.ImagePath" />
+                            <small class="text-muted">Leave empty to keep the current image</small>
+                            <span asp-validation-for="ImagePath" class="text-danger"></span>
+                        </div>
+
+                        @if (!string.IsNullOrEmpty(Model.ImagePath))
+                        {
+                            <div class="mb-3">
+                                <label class="form-label">Current Image</label>
+                                <img src="@Model.ImagePath" class="img-thumbnail" style="max-height: 200px;" alt="Current trip image" />
+                            </div>
+                        }
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                            <a asp-action="AdminDashboard" asp-controller="Account" class="btn btn-secondary me-md-2">Cancel</a>
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
-
-    <div class="form-group">
-        <label asp-for="Description"></label>
-        <textarea asp-for="Description" class="form-control"></textarea>
-        <span asp-validation-for="Description" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <label asp-for="Destination"></label>
-        <input asp-for="Destination" class="form-control" />
-        <span asp-validation-for="Destination" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <label asp-for="HotelName"></label>
-        <input asp-for="HotelName" class="form-control" />
-        <span asp-validation-for="HotelName" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <label asp-for="TransportType"></label>
-        <input asp-for="TransportType" class="form-control" />
-        <span asp-validation-for="TransportType" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <label asp-for="StartDate"></label>
-        <input asp-for="StartDate" class="form-control" type="date" />
-        <span asp-validation-for="StartDate" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <label asp-for="EndDate"></label>
-        <input asp-for="EndDate" class="form-control" type="date" />
-        <span asp-validation-for="EndDate" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <label asp-for="price"></label>
-        <input asp-for="price" class="form-control" />
-        <span asp-validation-for="price" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <label asp-for="ImagePath"></label>
-        <input asp-for="ImagePath" class="form-control" type="file" />
-        <span asp-validation-for="ImagePath" class="text-danger"></span>
-    </div>
-
-    <button type="submit" class="btn btn-primary">Save Changes</button>
-    <a asp-action="AdminDashboard" asp-controller="Account" class="btn btn-secondary">Cancel</a>
-
-</form>
+</div>
 
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+    <script>
+        // Form validation
+        (function () {
+            'use strict'
+            var forms = document.querySelectorAll('.needs-validation')
+            Array.prototype.slice.call(forms)
+                .forEach(function (form) {
+                    form.addEventListener('submit', function (event) {
+                        if (!form.checkValidity()) {
+                            event.preventDefault()
+                            event.stopPropagation()
+                        }
+                        form.classList.add('was-validated')
+                    }, false)
+                })
+        })()
+    </script>
 }

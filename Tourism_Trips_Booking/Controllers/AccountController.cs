@@ -129,9 +129,8 @@ namespace Tourism_Trips_Booking.Controllers
                 {
                     _context.UserAccount.Add(account);
                     _context.SaveChanges();
-                    ModelState.Clear();
-                    ViewBag.Message = $"{account.Name} registered successfully. Please login now!";
-                    return View("Register");
+                    TempData["SuccessMessage"] = $"{account.Name} registered successfully. Please login now!";
+                    return RedirectToAction("Login", "Account");
                 }
                 catch (DbUpdateException ex)
                 {
@@ -188,36 +187,43 @@ namespace Tourism_Trips_Booking.Controllers
 
             var now = DateTime.Now;
 
-            // Get all trips with their images
+            // Get all bookings for the current user with their associated trips and payments
+            var userBookings = _context.Booking
+                .Include(b => b.Trips)
+                .Include(b => b.Payment)
+                .Where(b => b.UserID == userId)
+                .ToList();
+
+            // Get all trips for recommendations
             var allTrips = _context.Trips
                 .Include(t => t.Bookings)
                 .ThenInclude(b => b.UserAccount)
                 .ToList();
 
-            // Get booked trip IDs for the current user
-            var bookedTripIds = _context.Booking
-                .Where(b => b.UserID == userId)
-                .Select(b => b.TripID)
+            // Get booked trips (including multiple bookings of the same trip)
+            var bookedTrips = userBookings
+                .Where(b => b.Trips.StartDate > now)
+                .Select(b => b.Trips)
                 .ToList();
 
-            // Filter trips based on dates and booking status
-            var bookedTrips = allTrips
-                .Where(t => bookedTripIds.Contains(t.Id) && t.StartDate > now)
-                .ToList();
-
+            // Get recommended trips (trips not booked by the user)
+            var bookedTripIds = userBookings.Select(b => b.TripID).ToList();
             var recommendedTrips = allTrips
                 .Where(t => !bookedTripIds.Contains(t.Id) && t.StartDate > now)
                 .OrderByDescending(t => t.Bookings.Count)
                 .Take(5)
                 .ToList();
 
-            var previousTrips = allTrips
-                .Where(t => bookedTripIds.Contains(t.Id) && t.EndDate < now)
+            // Get previous trips (including multiple bookings of the same trip)
+            var previousTrips = userBookings
+                .Where(b => b.Trips.EndDate < now)
+                .Select(b => b.Trips)
                 .ToList();
 
             ViewBag.BookedTrips = bookedTrips;
             ViewBag.RecommendedTrips = recommendedTrips;
             ViewBag.PreviousTrips = previousTrips;
+            ViewBag.UserBookings = userBookings;
 
             return View();
         }

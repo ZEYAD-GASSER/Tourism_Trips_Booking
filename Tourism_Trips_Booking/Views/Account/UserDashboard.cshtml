@@ -1,23 +1,34 @@
 ﻿@{
     ViewData["Title"] = "User Dashboard";
     var bookedTrips = ViewBag.BookedTrips as List<Tourism_Trips_Booking.Models.Trips>;
-    var notBookedTrips = ViewBag.NotBookedTrips as List<Tourism_Trips_Booking.Models.Trips>;
+    var recommendedTrips = ViewBag.RecommendedTrips as List<Tourism_Trips_Booking.Models.Trips>;
+    var previousTrips = ViewBag.PreviousTrips as List<Tourism_Trips_Booking.Models.Trips>;
+    var userBookings = ViewBag.UserBookings as List<Tourism_Trips_Booking.Models.Booking>;
 }
 
 <div class="container mt-4">
-
     @if (TempData["SuccessMessage"] != null)
     {
         <div class="alert alert-success">
             @TempData["SuccessMessage"]
         </div>
     }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["ErrorMessage"]
+        </div>
+    }
+
     <h3 class="mb-3">Upcoming Booked Trips</h3>
     @if (bookedTrips != null && bookedTrips.Any())
     {
         <div class="row">
             @foreach (var trip in bookedTrips)
             {
+                var booking = userBookings?.FirstOrDefault(b => b.TripID == trip.Id);
+                var numberOfPeople = booking?.Payment != null ? (int)(booking.Payment.Price / trip.price) : 1;
+                
                 <div class="col-md-4 mb-3">
                     <div class="card shadow-sm">
                         <img src="@Url.Content(trip.ImagePath)" class="card-img-top" style="height: 200px; object-fit: cover;" alt="@trip.Title" onerror="this.onerror=null; this.src='@Url.Content("~/images/default.jpg")';" />
@@ -25,13 +36,23 @@
                             <h5 class="card-title">@trip.Title</h5>
                             <p class="card-text text-muted">@trip.Destination</p>
                             <p class="card-text">Start: @trip.StartDate.ToShortDateString()</p>
-                            <a asp-controller="Home" asp-action="Details" asp-route-id="@trip.Id" class="btn btn-sm btn-outline-primary">View Details</a>
-
-                            <form asp-controller="Booking" asp-action="CancelReservation" method="post" asp-route-tripId="@trip.Id" class="mt-2">
-                                <button type="submit" class="btn btn-sm btn-outline-danger">Cancel Reservation</button>
+                            <p class="card-text">End: @trip.EndDate.ToShortDateString()</p>
+                            
+                            <form asp-controller="Booking" asp-action="EditPassengers" method="post" class="mb-3">
+                                <input type="hidden" name="bookingId" value="@booking?.Id" />
+                                <div class="form-group">
+                                    <label for="numberOfPeople">Number of Passengers:</label>
+                                    <input type="number" class="form-control" id="numberOfPeople" name="numberOfPeople" 
+                                           min="1" max="10" value="@numberOfPeople" />
+                                </div>
+                                <button type="submit" class="btn btn-sm btn-outline-primary mt-2">Update Passengers</button>
                             </form>
 
+                            <a asp-controller="Home" asp-action="Details" asp-route-id="@trip.Id" class="btn btn-sm btn-outline-primary">View Details</a>
 
+                            <form asp-controller="Booking" asp-action="CancelReservation" method="post" asp-route-bookingId="@booking?.Id" class="mt-2">
+                                <button type="submit" class="btn btn-sm btn-outline-danger">Cancel Reservation</button>
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -46,10 +67,10 @@
     <hr class="my-5" />
 
     <h3 class="mt-4">Recommended Trips</h3>
-    @if (ViewBag.RecommendedTrips != null && ViewBag.RecommendedTrips.Count > 0)
+    @if (recommendedTrips != null && recommendedTrips.Any())
     {
         <div class="row">
-            @foreach (var trip in ViewBag.RecommendedTrips)
+            @foreach (var trip in recommendedTrips)
             {
                 <div class="col-md-4 mb-3">
                     <div class="card h-100">
@@ -58,7 +79,7 @@
                             <h5 class="card-title">@trip.Title</h5>
                             <p class="card-text">Start: @trip.StartDate.ToShortDateString()</p>
                             <p class="card-text">End: @trip.EndDate.ToShortDateString()</p>
-                            <p class="card-text">Price: @trip.price</p>
+                            <p class="card-text">Price: $@trip.price</p>
                             <a asp-controller="Home" asp-action="Details" asp-route-id="@trip.Id" class="btn btn-sm btn-outline-primary">View Details</a>
                         </div>
                     </div>
@@ -74,12 +95,14 @@
     <hr class="my-5" />
 
     <h3 class="mb-3">Previous Trips</h3>
-    @if (ViewBag.PreviousTrips != null && ((List<Tourism_Trips_Booking.Models.Trips>)ViewBag.PreviousTrips).Any())
+    @if (previousTrips != null && previousTrips.Any())
     {
-        var previousTrips = (List<Tourism_Trips_Booking.Models.Trips>)ViewBag.PreviousTrips;
         <div class="row">
             @foreach (var trip in previousTrips)
             {
+                var booking = userBookings?.FirstOrDefault(b => b.TripID == trip.Id);
+                var numberOfPeople = booking?.Payment != null ? (int)(booking.Payment.Price / trip.price) : 1;
+                
                 <div class="col-md-4 mb-3">
                     <div class="card shadow-sm">
                         <img src="@Url.Content(trip.ImagePath)" class="card-img-top" style="height: 200px; object-fit: cover;" alt="@trip.Title" onerror="this.onerror=null; this.src='@Url.Content("~/images/default.jpg")';" />
@@ -87,6 +110,7 @@
                             <h5 class="card-title">@trip.Title</h5>
                             <p class="card-text text-muted">@trip.Destination</p>
                             <p class="card-text">Ended: @trip.EndDate.ToShortDateString()</p>
+                            <p class="card-text">Passengers: @numberOfPeople</p>
                             <a asp-controller="Home" asp-action="Details" asp-route-id="@trip.Id" class="btn btn-sm btn-outline-secondary">View Details</a>
                         </div>
                     </div>
@@ -98,5 +122,4 @@
     {
         <p class="text-muted">You haven't completed any trips yet.</p>
     }
-
 </div>

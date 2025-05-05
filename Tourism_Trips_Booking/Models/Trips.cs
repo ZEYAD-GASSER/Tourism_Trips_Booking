@@ -39,7 +39,6 @@ namespace Tourism_Trips_Booking.Models
         public double price { get; set; }
 
         [MaxLength(300)]
-        [Required]
         public string? ImagePath { get; set; }
 
 

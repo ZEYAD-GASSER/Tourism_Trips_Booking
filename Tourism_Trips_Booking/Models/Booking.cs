@@ -21,6 +21,7 @@ namespace Tourism_Trips_Booking.Models
 
         [Required]
         public UserAccount UserAccount { get; set; }
-    }
 
+        public Payment Payment { get; set; }
+    }
 }

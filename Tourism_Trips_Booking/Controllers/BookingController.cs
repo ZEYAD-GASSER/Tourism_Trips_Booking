@@ -24,6 +24,20 @@ namespace Tourism_Trips_Booking.Controllers
                 return RedirectToAction("Login", "Account", new { returnUrl });
             }
 
+            var userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null)
+                return RedirectToAction("Login", "Account");
+
+            // Check if the trip is already booked by this user
+            var existingBooking = _context.Booking
+                .FirstOrDefault(b => b.TripID == tripId && b.UserID == userId);
+
+            if (existingBooking != null)
+            {
+                TempData["ErrorMessage"] = "You have already booked this trip. You can manage your booking from your dashboard.";
+                return RedirectToAction("UserDashboard", "Account");
+            }
+
             var trip = _context.Trips.FirstOrDefault(t => t.Id == tripId);
             if (trip == null) return NotFound();
 
@@ -86,22 +100,18 @@ namespace Tourism_Trips_Booking.Controllers
             return View();
         }
         [HttpPost]
-        public async Task<IActionResult> CancelReservation(int tripId)
+        public async Task<IActionResult> CancelReservation(int bookingId)
         {
             if (!User.Identity.IsAuthenticated)
                 return RedirectToAction("Login", "Account");
 
-            var userEmail = User.Identity?.Name;
-            if (userEmail == null)
+            var userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null)
                 return Unauthorized();
 
-            var user = await _context.UserAccount.FirstOrDefaultAsync(u => u.Email == userEmail);
-            if (user == null)
-                return Unauthorized();
-
-            // Find the booking for this user and trip
+            // Find the booking for this user
             var booking = await _context.Booking
-                .FirstOrDefaultAsync(b => b.TripID == tripId && b.UserID == user.Id);
+                .FirstOrDefaultAsync(b => b.Id == bookingId && b.UserID == userId);
 
             if (booking == null)
                 return NotFound("Booking not found.");
@@ -118,6 +128,35 @@ namespace Tourism_Trips_Booking.Controllers
             return RedirectToAction("UserDashboard", "Account");
         }
 
+        [HttpPost]
+        public async Task<IActionResult> EditPassengers(int bookingId, int numberOfPeople)
+        {
+            if (!User.Identity.IsAuthenticated)
+                return RedirectToAction("Login", "Account");
 
+            var userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null)
+                return Unauthorized();
+
+            var booking = await _context.Booking
+                .Include(b => b.Trips)
+                .FirstOrDefaultAsync(b => b.Id == bookingId && b.UserID == userId);
+
+            if (booking == null)
+                return NotFound("Booking not found.");
+
+            // Update the payment with new total price
+            var payment = await _context.Payment.FirstOrDefaultAsync(p => p.BookingID == booking.Id);
+            if (payment != null)
+            {
+                payment.Price = booking.Trips.price * numberOfPeople;
+                _context.Payment.Update(payment);
+            }
+
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = "Number of passengers updated successfully.";
+            return RedirectToAction("UserDashboard", "Account");
+        }
     }
 }

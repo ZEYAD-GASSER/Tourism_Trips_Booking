@@ -69,11 +69,10 @@
                         </td>
                         <td>
                             <div class="btn-group" role="group">
-                                <a href="@Url.Action("Edit", "Trip", new { id = trip.Id })" class="btn btn-warning btn-sm">Edit</a>
-                                <form asp-controller="Trip" asp-action="Delete" method="post" style="display: inline;">
-                                    <input type="hidden" name="id" value="@trip.Id" />
-                                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this trip?');">Delete</button>
-                                </form>
+                                <a href="@Url.Action("Edit", "Trip", new { id = trip.Id })" class="btn btn-warning">Edit</a>
+
+                                <a href="@Url.Action("Delete", "Trip", new { id = trip.Id })" class="btn btn-danger" onclick = "return confirm('Are you sure!');">Delete</a>
+
                             </div>
                         </td>
                     </tr>

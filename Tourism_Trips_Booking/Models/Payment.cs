@@ -20,5 +20,4 @@ namespace Tourism_Trips_Booking.Models
         [MaxLength(20)]
         public string CashOrCard { get; set; }
     }
-
 }
