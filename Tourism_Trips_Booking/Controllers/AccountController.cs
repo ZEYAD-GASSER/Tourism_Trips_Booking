@@ -339,9 +339,9 @@ namespace Tourism_Trips_Booking.Controllers
                         return View(model);
                     }
 
-                    if (model.NewPassword.Length < 6)
+                    if (model.NewPassword.Length < 8)
                     {
-                        ModelState.AddModelError("NewPassword", "Password must be at least 6 characters long");
+                        ModelState.AddModelError("NewPassword", "Password must be at least 8 characters long");
                         return View(model);
                     }
 
